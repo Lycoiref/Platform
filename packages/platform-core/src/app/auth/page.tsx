@@ -21,13 +21,20 @@ const LineInput = ({
 	)
 }
 
-const Auth = () => {
+type AuthType = 'login' | 'register'
+
+type AuthFormProps = {
+	type: AuthType
+	toggleType: () => void
+}
+
+const AuthForm = (props: AuthFormProps) => {
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
 
-	const handleLogin = async () => {
-		console.log('login', baseUrl)
+	const { type, toggleType } = props
 
+	const handleLogin = async () => {
 		const res = await fetch(`${baseUrl}/api/login`, {
 			method: 'POST',
 			headers: {
@@ -45,6 +52,84 @@ const Auth = () => {
 		} else {
 			console.log('login', res.status)
 		}
+	}
+
+	return (
+		<div className="right flex flex-col justify-center flex-grow h-full items-center gap-4 px-8">
+			<div className="self-start text-2xl mb-8 ml-10 font-black">
+				<div className="line">
+					{type === 'login' ? '登录到' : '注册到'}
+				</div>
+				<div className="line">
+					<ReactTypingEffect
+						className="ml-6"
+						text={['Hello', 'HelloWorld!']}
+						speed={20}
+						eraseSpeed={20}
+						typingDelay={200}
+						eraseDelay={1000}
+					/>
+				</div>
+			</div>
+			{type === 'login' ? (
+				<>
+					<LineInput
+						placeholder="Username"
+						value={username}
+						onChange={(e) => setUsername(e.target.value)}
+					/>
+					<LineInput
+						placeholder="Password"
+						type="password"
+						value={password}
+						onChange={(e) => setPassword(e.target.value)}
+					/>
+				</>
+			) : (
+				<>
+					<LineInput
+						placeholder="Username"
+						value={username}
+						onChange={(e) => setUsername(e.target.value)}
+					/>
+					<LineInput
+						placeholder="Password"
+						type="password"
+						value={password}
+						onChange={(e) => setPassword(e.target.value)}
+					/>
+					<LineInput
+						placeholder="Confirm Password"
+						type="password"
+						value={password}
+						onChange={(e) => setPassword(e.target.value)}
+					/>
+				</>
+			)}
+			<div className="self-end text-sm gap-2 flex mr-10">
+				<a href="/register">忘记密码？</a>
+				<a
+					className="cursor-pointer"
+					onClick={toggleType}
+				>
+					注册账号
+				</a>
+			</div>
+			<button
+				onClick={handleLogin}
+				className="bg-black text-white rounded p-2 w-3/5 hover:shadow-2xl transition-all"
+			>
+				登录
+			</button>
+		</div>
+	)
+}
+
+const Auth = () => {
+	const [authType, setAuthType] = useState<AuthType>('login')
+
+	const toggleType = () => {
+		setAuthType(authType === 'login' ? 'register' : 'login')
 	}
 
 	return (
@@ -68,42 +153,10 @@ const Auth = () => {
 						}}
 					/>
 				</div>
-				<div className="right flex flex-col justify-center flex-grow h-full items-center gap-4 px-8">
-					<div className="self-start text-2xl mb-8 ml-10 font-black">
-						<div className="line">登录到</div>
-						<div className="line">
-							<ReactTypingEffect
-								className="ml-6"
-								text={['Hello', 'HelloWorld!']}
-								speed={20}
-								eraseSpeed={20}
-								typingDelay={200}
-								eraseDelay={1000}
-							/>
-						</div>
-					</div>
-					<LineInput
-						placeholder="Username"
-						value={username}
-						onChange={(e) => setUsername(e.target.value)}
-					/>
-					<LineInput
-						placeholder="Password"
-						type="password"
-						value={password}
-						onChange={(e) => setPassword(e.target.value)}
-					/>
-					<div className="self-end text-sm gap-2 flex mr-10">
-						<a href="/register">忘记密码？</a>
-						<a href="/register">注册账号</a>
-					</div>
-					<button
-						onClick={handleLogin}
-						className="bg-black text-white rounded p-2 w-3/5 hover:shadow-2xl transition-all"
-					>
-						登录
-					</button>
-				</div>
+				<AuthForm
+					type={authType}
+					toggleType={toggleType}
+				/>
 			</div>
 		</div>
 	)

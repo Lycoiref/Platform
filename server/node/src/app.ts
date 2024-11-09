@@ -3,9 +3,12 @@ import Router from '@koa/router'
 import bodyParser from 'koa-bodyparser'
 import logger from 'koa-logger'
 import cors from '@koa/cors'
-import { koaSwagger } from 'koa2-swagger-ui'
 import path from 'path'
 import serve from 'koa-static'
+import routes from './routes'
+import errorHandler from './middleware/errorHandler'
+
+import { koaSwagger } from 'koa2-swagger-ui'
 
 // Initialize Koa app
 const app = new Koa()
@@ -47,22 +50,11 @@ app.use(
 
 // Register routes
 app.use(router.routes())
+app.use(routes.routes())
 app.use(router.allowedMethods())
 
 // Error handling
-app.use(async (ctx, next) => {
-	try {
-		await next()
-	} catch (err: unknown) {
-		// TODO 没时间写，先workaround
-		const typedError = err as Error & {
-			status: number
-		}
-		ctx.status = typedError.status || 500
-		ctx.body = typedError.message
-		ctx.app.emit('error', typedError, ctx)
-	}
-})
+app.use(errorHandler)
 
 // Error event listener
 app.on('error', (err, ctx) => {

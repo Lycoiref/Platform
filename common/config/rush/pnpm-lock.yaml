@@ -74,14 +74,11 @@ importers:
         specifier: ~5.0.0
         version: 5.0.0
       '@koa/router':
-        specifier: ~13.0.0
-        version: 13.0.0
+        specifier: ~13.1.0
+        version: 13.1.0
       '@prisma/client':
         specifier: ^5.19.1
         version: 5.20.0(prisma@5.18.0)
-      '@types/nodemailer':
-        specifier: ^6.4.16
-        version: 6.4.16
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
@@ -94,6 +91,9 @@ importers:
       koa-body:
         specifier: ^6.0.1
         version: 6.0.1
+      koa-bodyparser:
+        specifier: ~4.4.1
+        version: 4.4.1
       koa-logger:
         specifier: ~3.2.1
         version: 3.2.1
@@ -137,6 +137,9 @@ importers:
       '@types/node':
         specifier: ^22.7.4
         version: 22.7.5
+      '@types/nodemailer':
+        specifier: ^6.4.16
+        version: 6.4.16
       prisma:
         specifier: ^5.18.0
         version: 5.18.0
@@ -458,13 +461,13 @@ packages:
       vary: 1.1.2
     dev: false
 
-  /@koa/router@13.0.0:
-    resolution: {integrity: sha512-P278xb5IoLtDn2inRsCzJVKGxt5RkjOivwxGbniMO1sI8bft1/Dr93UsRP5aByT8C74x8zqxDYyPXrQwRKIhjg==}
+  /@koa/router@13.1.0:
+    resolution: {integrity: sha512-mNVu1nvkpSd8Q8gMebGbCkDWJ51ODetrFvLKYusej+V0ByD4btqHYnPIzTBLXnQMVUlm/oxVwqmWBY3zQfZilw==}
     engines: {node: '>= 18'}
     dependencies:
       http-errors: 2.0.0
       koa-compose: 4.1.0
-      path-to-regexp: 6.2.2
+      path-to-regexp: 6.3.0
     dev: false
 
   /@mdx-js/mdx@3.0.1:
@@ -953,7 +956,7 @@ packages:
     resolution: {integrity: sha512-uz6hN6Pp0upXMcilM61CoKyjT7sskBoOWpptkjjJp8jIMlTdc3xG01U7proKkXzruMS4hS0zqtHNkNPFB20rKQ==}
     dependencies:
       '@types/node': 22.7.5
-    dev: false
+    dev: true
 
   /@types/normalize-package-data@2.4.4:
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
@@ -1677,6 +1680,10 @@ packages:
   /copy-text-to-clipboard@2.2.0:
     resolution: {integrity: sha512-WRvoIdnTs1rgPMkgA2pUOa/M4Enh2uzCwdKsOMYNAJiz/4ZvEJgmbF4OmninPmlFdAWisfeh0tH+Cpf7ni3RqQ==}
     engines: {node: '>=6'}
+    dev: false
+
+  /copy-to@2.0.1:
+    resolution: {integrity: sha512-3DdaFaU/Zf1AnpLiFDeNCD4TOWe3Zl2RZaTzUvWiIk5ERzcCodOE20Vqq4fzCbNoHURFHT4/us/Lfq+S2zyY4w==}
     dev: false
 
   /create-require@1.1.1:
@@ -3239,6 +3246,15 @@ packages:
       zod: 3.23.8
     dev: false
 
+  /koa-bodyparser@4.4.1:
+    resolution: {integrity: sha512-kBH3IYPMb+iAXnrxIhXnW+gXV8OTzCu8VPDqvcDHW9SQrbkHmqPQtiZwrltNmSq6/lpipHnT7k7PsjlVD7kK0w==}
+    engines: {node: '>=8.0.0'}
+    dependencies:
+      co-body: 6.2.0
+      copy-to: 2.0.1
+      type-is: 1.6.18
+    dev: false
+
   /koa-compose@4.1.0:
     resolution: {integrity: sha512-8ODW8TrDuMYvXRwra/Kh7/rJo9BtOfPc6qO8eAfC80CnCvSjSl0bkRM24X6/XBBEyj0v1nRUQ1LyOy3dbqOWXw==}
     dev: false
@@ -4345,8 +4361,8 @@ packages:
       minipass: 7.1.2
     dev: true
 
-  /path-to-regexp@6.2.2:
-    resolution: {integrity: sha512-GQX3SSMokngb36+whdpRXE+3f9V8UzyAorlYvOGx87ufGHehNTn5lCxrKtLyZ4Yl/wEKnNnr98ZzOwwDZV5ogw==}
+  /path-to-regexp@6.3.0:
+    resolution: {integrity: sha512-Yhpw4T9C6hPpgPeA28us07OJeqZ5EzQTkbfwuhsUg0c237RomFoETJgmp2sa3F/41gfLE6G5cqcYwznmeEeOlQ==}
     dev: false
 
   /path-type@4.0.0:
