@@ -58,7 +58,11 @@ function runProcess(command, args, description, workingDir = __dirname) {
 // 主函数
 async function main() {
 	// 设置编码为 UTF-8，防止控制台输出乱码
-	await runCommand('chcp 65001', '设置编码为 UTF-8')
+	try {
+		await runCommand('chcp 65001', '设置编码为 UTF-8')
+	} catch (error) {
+		// 不支持设置编码，跳过
+	}
 
 	const goProjectDir = path.join(__dirname, '../../server/golang')
 	console.log(`\n🚀 正在启动 Go 项目: ${goProjectDir}`)

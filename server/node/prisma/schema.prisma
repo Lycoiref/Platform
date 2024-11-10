@@ -12,7 +12,7 @@ model Club {
   name        String       @unique
   description String?
   createdAt   DateTime     @default(now())
-  updatedAt   DateTime
+  updatedAt   DateTime     @updatedAt
   Membership  Membership[]
 }
 
@@ -22,7 +22,7 @@ model Membership {
   userId    Int
   clubId    Int
   createdAt DateTime @default(now())
-  updatedAt DateTime
+  updatedAt DateTime @updatedAt
   Club      Club     @relation(fields: [clubId], references: [id])
   User      User     @relation(fields: [userId], references: [id])
 }
@@ -67,7 +67,7 @@ model RolePermission {
   roleId       Int
   permissionId Int
   createdAt    DateTime   @default(now())
-  updatedAt    DateTime
+  updatedAt    DateTime   @updatedAt
   Permission   Permission @relation(fields: [permissionId], references: [id])
   Role         Role       @relation(fields: [roleId], references: [id])
 }
@@ -85,16 +85,16 @@ model User {
   email        String         @unique
   username     String         @unique
   password     String
-  firstName    String
-  lastName     String
+  firstName    String?
+  lastName     String?
   createdAt    DateTime       @default(now())
-  updatedAt    DateTime
-  roleId       Int
+  updatedAt    DateTime       @updatedAt
+  roleId       Int?
   Membership   Membership[]
   OAuthAccount OAuthAccount[]
   Profile      Profile?
   Session      Session[]
-  Role         Role           @relation(fields: [roleId], references: [id])
+  Role         Role?          @relation(fields: [roleId], references: [id])
 }
 
 model VerificationToken {
