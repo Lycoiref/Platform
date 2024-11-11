@@ -4,14 +4,13 @@ import Shiki from '@shikijs/markdown-it'
 import 'github-markdown-css'
 
 const mdParser = new markdownit()
-Shiki({
-	themes: {
-		light: 'material-theme-lighter',
-		dark: 'material-theme-palenight',
-	},
-}).then((shiki) => {
-	mdParser.use(shiki)
-})
+
+mdParser.use(await Shiki({
+   themes: {
+     light: 'material-theme-lighter',
+     dark: 'material-theme-palenight',
+   },
+ }))
 
 const MarkdownRender = ({ md }: { md: string }) => {
 	const htmlContent = mdParser.render(md)
