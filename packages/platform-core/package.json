@@ -7,28 +7,34 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "Elint": "eslint . ",
+    "format": "prettier --write . --ignore-path .prettierignore"
   },
   "dependencies": {
+    "@douyinfe/semi-ui": "~2.67.2",
+    "@shikijs/markdown-it": "~1.22.2",
+    "github-markdown-css": "~5.7.0",
+    "markdown-it": "~14.1.0",
+    "next": "14.2.15",
     "react": "^18",
     "react-dom": "^18",
-    "next": "14.2.15",
-    "@douyinfe/semi-ui": "~2.67.2",
-    "react-typing-effect": "~2.0.5",
-    "markdown-it": "~14.1.0",
-    "@shikijs/markdown-it": "~1.22.2",
-    "github-markdown-css": "~5.7.0"
+    "react-typing-effect": "~2.0.5"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@types/markdown-it": "~14.1.2",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
+    "@types/react-typing-effect": "~2.0.7",
+    "@typescript-eslint/eslint-plugin": "^8.13.0",
+    "@typescript-eslint/parser": "^8.13.0",
     "eslint": "^8",
     "eslint-config-next": "14.2.15",
-    "@types/react-typing-effect": "~2.0.7",
-    "@types/markdown-it": "~14.1.2"
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
   }
 }
