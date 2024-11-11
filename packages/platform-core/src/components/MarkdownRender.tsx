@@ -13,14 +13,14 @@ mdParser.use(await Shiki({
  }))
 
 const MarkdownRender = ({ md }: { md: string }) => {
-	const htmlContent = mdParser.render(md)
+  const htmlContent = mdParser.render(md)
 
-	return (
-		<div
-			className="markdown-body"
-			dangerouslySetInnerHTML={{ __html: htmlContent }}
-		></div>
-	)
+  return (
+    <div
+      className="markdown-body"
+      dangerouslySetInnerHTML={{ __html: htmlContent }}
+    ></div>
+  )
 }
 
 export default MarkdownRender
