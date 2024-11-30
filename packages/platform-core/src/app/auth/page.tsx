@@ -30,13 +30,14 @@ type AuthFormProps = {
 
 const AuthForm = (props: AuthFormProps) => {
   const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
 
   const { type, toggleType } = props
 
   const handleLogin = async () => {
-    const res = await fetch(`${baseUrl}/api/login`, {
+    const res = await fetch(`/api/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -56,28 +57,31 @@ const AuthForm = (props: AuthFormProps) => {
   }
 
   const handleRegister = async () => {
-    if (password !== confirmPassword) {
-      console.log('password not match')
-      return
-    }
+    console.log('register', username, email, password, confirmPassword)
 
-    const res = await fetch(`${baseUrl}/api/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        username,
-        password
-      })
-    })
-
-    if (res.ok) {
-      const data = await res.json()
-      console.log('register', data)
-    } else {
-      console.log('register', res.status)
-    }
+    const res = await fetch('/api/')
+    // const data = await res.json()
+    // console.log('res', res, data)
+    // if (password !== confirmPassword) {
+    //   console.log('password not match')
+    //   return
+    // }
+    // const res = await fetch(`${baseUrl}/api/register`, {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json'
+    //   },
+    //   body: JSON.stringify({
+    //     username,
+    //     password
+    //   })
+    // })
+    // if (res.ok) {
+    //   const data = await res.json()
+    //   console.log('register', data)
+    // } else {
+    //   console.log('register', res.status)
+    // }
   }
 
   return (
@@ -115,6 +119,11 @@ const AuthForm = (props: AuthFormProps) => {
             placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+          />
+          <LineInput
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <LineInput
             placeholder="Password"
