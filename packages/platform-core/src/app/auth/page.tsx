@@ -3,6 +3,7 @@ import Image from 'next/image'
 import ReactTypingEffect from 'react-typing-effect'
 
 import { InputHTMLAttributes, useState } from 'react'
+import { Toast } from '@douyinfe/semi-ui'
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
 
@@ -25,7 +26,7 @@ type AuthType = 'login' | 'register'
 
 type AuthFormProps = {
   type: AuthType
-  toggleType: () => void
+  toggleType: (targetType?: AuthType) => void
 }
 
 const AuthForm = (props: AuthFormProps) => {
@@ -37,51 +38,58 @@ const AuthForm = (props: AuthFormProps) => {
   const { type, toggleType } = props
 
   const handleLogin = async () => {
-    const res = await fetch(`/api/login`, {
+    const res = await fetch(`${baseUrl}/api/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        username,
+        emailOrUsername: username,
         password
       })
     })
 
+    const data = await res.json()
     if (res.ok) {
-      const data = await res.json()
-      console.log('login', data)
+      // 设置token
+      const token = data.token
+      localStorage.setItem('token', token)
+
+      // 跳转到首页
+      window.location.href = '/'
     } else {
-      console.log('login', res.status)
+      Toast.error('登录失败' + data.error)
     }
   }
 
   const handleRegister = async () => {
     console.log('register', username, email, password, confirmPassword)
 
-    const res = await fetch('/api/')
-    // const data = await res.json()
-    // console.log('res', res, data)
-    // if (password !== confirmPassword) {
-    //   console.log('password not match')
-    //   return
-    // }
-    // const res = await fetch(`${baseUrl}/api/register`, {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json'
-    //   },
-    //   body: JSON.stringify({
-    //     username,
-    //     password
-    //   })
-    // })
-    // if (res.ok) {
-    //   const data = await res.json()
-    //   console.log('register', data)
-    // } else {
-    //   console.log('register', res.status)
-    // }
+    if (password !== confirmPassword) {
+      Toast.error('密码不一致')
+
+      return
+    }
+    const res = await fetch(`${baseUrl}/api/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        username,
+        email,
+        password
+      })
+    })
+
+    const data = await res.json()
+    if (res.ok && res.status === 201) {
+      Toast.success('注册成功')
+
+      toggleType('login')
+    } else {
+      Toast.error('注册失败' + data.error)
+    }
   }
 
   return (
@@ -143,13 +151,13 @@ const AuthForm = (props: AuthFormProps) => {
         <div className="self-end text-sm gap-2 flex mr-10">
           {/* TODO: 换成Link到忘记密码页面 */}
           <div>忘记密码？</div>
-          <div className="cursor-pointer" onClick={toggleType}>
+          <div className="cursor-pointer" onClick={() => toggleType()}>
             注册账号
           </div>
         </div>
       ) : (
         <div className="self-end text-sm gap-2 flex mr-10">
-          <div className="cursor-pointer" onClick={toggleType}>
+          <div className="cursor-pointer" onClick={() => toggleType()}>
             已有账号？登录账号
           </div>
         </div>
@@ -176,7 +184,12 @@ const AuthForm = (props: AuthFormProps) => {
 const Auth = () => {
   const [authType, setAuthType] = useState<AuthType>('login')
 
-  const toggleType = () => {
+  const toggleType = (targetType?: AuthType) => {
+    if (targetType) {
+      setAuthType(targetType)
+
+      return
+    }
     setAuthType(authType === 'login' ? 'register' : 'login')
   }
 

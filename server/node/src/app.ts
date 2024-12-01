@@ -6,6 +6,7 @@ import cors from '@koa/cors'
 import path from 'path'
 import serve from 'koa-static'
 import routes from './routes'
+import prisma from './prisma'
 import errorHandler from './middleware/errorHandler'
 
 import { koaSwagger } from 'koa2-swagger-ui'
@@ -18,6 +19,11 @@ const router = new Router()
 app.use(logger())
 app.use(bodyParser())
 app.use(cors())
+// Prisma middleware
+app.use(async (ctx, next) => {
+	ctx.prisma = prisma
+	await next()
+})
 
 // Serve static files
 app.use(serve(path.join(__dirname, 'public')))
