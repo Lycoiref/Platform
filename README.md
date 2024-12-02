@@ -1,63 +1,36 @@
-﻿README
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## 简介
+## Getting Started
 
-该系统主要用于为各种需要管理的小型平台提供框架，其包含 platform 前台设计与服务端搭建
-
-## 开发
-
-### 快速开始
+First, run the development server:
 
 ```bash
-# 克隆项目
-$ git clone git@github.com:Lycoiref/Platform.git
-
-# 安装rush (若已安装，请跳过此步骤)
-$ npm install -g @microsoft/rush
-
-# 进入项目目录
-$ cd Platform
-
-# 安装依赖
-$ rush update
-
-# 启动调试
-$ cd packages/platform-core
-$ rushx dev
-
-# 启动服务端调试
-$ rush dev:server
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-ps: 更多 rush 命令请参考 [rush 文档](https://rushjs.io/zh-cn/pages/intro/welcome/)
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## 技术栈
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
--   Next
--   Golang , Java , Rust
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-# 架构设计
+## Learn More
 
-Monorepo 架构
+To learn more about Next.js, take a look at the following resources:
 
-WIP...
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-### Git Commit 规范
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-feat： 新增 feature
+## Deploy on Vercel
 
-fix: 修复 bug
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-docs: 仅仅修改了文档，比如 README, CHANGELOG, CONTRIBUTE 等等
-
-style: 仅仅修改了空格、格式缩进、逗号等等，不改变代码逻辑
-
-refactor: 代码重构，没有加新功能或者修复 bug
-
-perf: 优化相关，比如提升性能、体验
-
-test: 测试用例，包括单元测试、集成测试等
-
-chore: 改变构建流程、或者增加依赖库、工具等
-
-revert: 回滚到上一个版本
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
