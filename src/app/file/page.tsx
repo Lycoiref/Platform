@@ -18,7 +18,7 @@ import {
   ExpandIconA,
   ExpandIconB,
   UserIcon,
-  UploadIcon
+  UploadIcon,
 } from '@/components/static/'
 
 interface FType {
@@ -33,28 +33,28 @@ export default function FilePage() {
     {
       id: 1,
       name: '文档',
-      component: <LeftBarDocument />
+      component: <LeftBarDocument />,
     },
     {
       id: 2,
       name: '音乐',
-      component: <LeftBarMusic />
+      component: <LeftBarMusic />,
     },
     {
       id: 3,
       name: '视频',
-      component: <LeftBarVideo />
+      component: <LeftBarVideo />,
     },
     {
       id: 4,
       name: '图片',
-      component: <LeftBarPhoto />
+      component: <LeftBarPhoto />,
     },
     {
       id: 5,
       name: '其他',
-      component: <LeftBarOthers />
-    }
+      component: <LeftBarOthers />,
+    },
   ]
   const typesIcon: any = {
     '.folder': <TypesFolder />,
@@ -64,7 +64,7 @@ export default function FilePage() {
     '.xlsx': <TypesExcel />,
     '.mp3': <TypesMusic />,
     '.mp4': <TypesVideo />,
-    '.doc': <TypesDocx />
+    '.doc': <TypesDocx />,
   }
 
   const uploadRef = useRef<HTMLInputElement>(null)
@@ -97,7 +97,7 @@ export default function FilePage() {
       let url = 'http://localhost:6677/api/file/reader'
       url += '?' + `pathQuery=${encodeURIComponent(targetPath)}`
       const response = await fetch(url, {
-        method: 'GET'
+        method: 'GET',
       })
       const result = await response.json()
       const temp: FType[] = []
@@ -106,7 +106,7 @@ export default function FilePage() {
           path: folder.folderPath.replace(/\\/g, '/'),
           name: folder.folderName,
           size: null,
-          lastModefined: new Date(folder.lastModefined)
+          lastModefined: new Date(folder.lastModefined),
         })
       }
       for (const file of result.files) {
@@ -114,7 +114,7 @@ export default function FilePage() {
           name: file.fileName,
           path: file.filePath.replace(/\\/g, '/'),
           size: file.fileSize,
-          lastModefined: new Date(file.lastModefined)
+          lastModefined: new Date(file.lastModefined),
         })
       }
       setFilesAndFolders(temp)
@@ -129,7 +129,7 @@ export default function FilePage() {
     let url = 'http://localhost:6677/api/file/reader'
     url += '?' + `pathQuery=${encodeURIComponent(currentPath)}`
     const response = await fetch(url, {
-      method: 'GET'
+      method: 'GET',
     })
     const result = await response.json()
     const temp: FType[] = []
@@ -138,7 +138,7 @@ export default function FilePage() {
         path: folder.folderPath,
         name: folder.folderName,
         size: null,
-        lastModefined: new Date(folder.lastModefined)
+        lastModefined: new Date(folder.lastModefined),
       })
     }
     setFolders(temp)
@@ -166,7 +166,7 @@ export default function FilePage() {
       name: '',
       path: targetPath,
       size: null,
-      lastModefined: new Date()
+      lastModefined: new Date(),
     })
     setFilesAndFolders(temp)
     setCurrentItem(filesAndFolders[0])
@@ -229,7 +229,7 @@ export default function FilePage() {
     let url = 'http://localhost:6677/api/file/downloadOne'
     url += `?filePath=${encodeURIComponent(file.path)}`
     const res = await fetch(url, {
-      method: 'GET'
+      method: 'GET',
     })
     const blob = await res.blob()
     const link = document.createElement('a')
@@ -257,7 +257,7 @@ export default function FilePage() {
     for (const file of files) {
       const chunkSize = 1024 * 1024 * 5
       let index = 0
-      let [fname, fext] = file.name.split('.')
+      const [fname, fext] = file.name.split('.')
       const promises: Promise<any>[] = []
       while (index * chunkSize < file.size) {
         const blob = file.slice(index * chunkSize, (index + 1) * chunkSize)
@@ -267,7 +267,7 @@ export default function FilePage() {
         index++
         const res = fetch(url, {
           method: 'POST',
-          body: formData
+          body: formData,
         })
         promises.push(res)
       }
@@ -314,12 +314,12 @@ export default function FilePage() {
         style={{
           left: mousePosition.x,
           top: mousePosition.y,
-          display: showMenu ? 'flex' : 'none'
+          display: showMenu ? 'flex' : 'none',
         }}
-        className="fixed py-4 w-[150px] h-[240px] text-xs z-10 rounded-lg bg-[#ffffff] flex-col shadow-[0_0_1px_2px_rgba(0,0,0,0.05)]"
+        className="fixed z-10 h-[240px] w-[150px] flex-col rounded-lg bg-[#ffffff] py-4 text-xs shadow-[0_0_1px_2px_rgba(0,0,0,0.05)]"
       >
         <div
-          className="flex-1 flex px-5 gap-[12px] items-center hover:bg-[#f4f4f5] cursor-pointer"
+          className="flex flex-1 cursor-pointer items-center gap-[12px] px-5 hover:bg-[#f4f4f5]"
           onClick={() => {
             if (item.size != null) return
             setTargetPath(`${targetPath}/${item.name}`)
@@ -328,7 +328,7 @@ export default function FilePage() {
           打开
         </div>
         <div
-          className="flex-1 flex px-4 gap-[13px] items-center hover:bg-[#f4f4f5] cursor-pointer"
+          className="flex flex-1 cursor-pointer items-center gap-[13px] px-4 hover:bg-[#f4f4f5]"
           onClick={() => {
             setShowMenu(false)
             downloadFileOrFolder(item)
@@ -353,7 +353,7 @@ export default function FilePage() {
           <div>下载</div>
         </div>
         <div
-          className="flex-1 flex px-4 gap-[12px] items-center hover:bg-[#f4f4f5] cursor-pointer"
+          className="flex flex-1 cursor-pointer items-center gap-[12px] px-4 hover:bg-[#f4f4f5]"
           onClick={() => {
             if (cutItem !== null) {
               setCutItem(null)
@@ -375,7 +375,7 @@ export default function FilePage() {
           <div>复制</div>
         </div>
         <div
-          className="flex-1 flex px-4 gap-[14px] items-center hover:bg-[#f4f4f5] cursor-pointer"
+          className="flex flex-1 cursor-pointer items-center gap-[14px] px-4 hover:bg-[#f4f4f5]"
           onClick={() => {
             if (cutItem != null) {
               pasteFileOrFolder(
@@ -412,7 +412,7 @@ export default function FilePage() {
           <div>粘贴</div>
         </div>
         <div
-          className="flex-1 flex px-4 gap-[12px] items-center hover:bg-[#f4f4f5] cursor-pointer"
+          className="flex flex-1 cursor-pointer items-center gap-[12px] px-4 hover:bg-[#f4f4f5]"
           onClick={() => {
             if (copyItem !== null) setCopyItem(null)
             setCutItem(item)
@@ -431,7 +431,7 @@ export default function FilePage() {
           <div>剪切</div>
         </div>
         <div
-          className="flex-1 flex px-4 gap-[12px] items-center hover:bg-[#f4f4f5] cursor-pointer"
+          className="flex flex-1 cursor-pointer items-center gap-[12px] px-4 hover:bg-[#f4f4f5]"
           onClick={(e) => {
             e.stopPropagation()
             setShowMenu(false)
@@ -455,7 +455,7 @@ export default function FilePage() {
           <div>移动</div>
         </div>
         <div
-          className="flex-1 flex px-4 gap-[13px] items-center hover:bg-[#f4f4f5] cursor-pointer"
+          className="flex flex-1 cursor-pointer items-center gap-[13px] px-4 hover:bg-[#f4f4f5]"
           onClick={(e) => {
             setRenameInput(item.name)
             e.stopPropagation()
@@ -473,7 +473,7 @@ export default function FilePage() {
           <div>重命名</div>
         </div>
         <div
-          className="flex-1 flex px-4 gap-[12px] items-center hover:bg-[#f4f4f5] cursor-pointer"
+          className="flex flex-1 cursor-pointer items-center gap-[12px] px-4 hover:bg-[#f4f4f5]"
           onClick={() => deleteFileOrFolder(item.name, item.size)}
         >
           <div>
@@ -528,14 +528,14 @@ export default function FilePage() {
   return (
     <>
       <div
-        className="absolute z-10 w-screen h-screen justify-center items-center bg-[rgba(0,0,0,0.5)]"
+        className="absolute z-10 h-screen w-screen items-center justify-center bg-[rgba(0,0,0,0.5)]"
         style={{ display: moveFile ? 'flex' : 'none' }}
       >
-        <div className="bg-white w-3/5 h-[65%] flex flex-col rounded-2xl max-w-[700px] max-h-[600px]">
-          <div className="h-[50px] flex font-semibold text-sm px-6 items-center">
+        <div className="flex h-[65%] max-h-[600px] w-3/5 max-w-[700px] flex-col rounded-2xl bg-white">
+          <div className="flex h-[50px] items-center px-6 text-sm font-semibold">
             移动到
           </div>
-          <div className="h-[40px] text-sm bg-[#FAFAFC] flex items-center px-7">
+          <div className="flex h-[40px] items-center bg-[#FAFAFC] px-7 text-sm">
             <div
               className="text-[#CAC3CC]"
               style={{ display: folderPath ? 'none' : 'flex' }}
@@ -543,7 +543,7 @@ export default function FilePage() {
               全部文件
             </div>
             <div
-              className="flex gap-[6px] text-[#06A7FF] font-medium"
+              className="flex gap-[6px] font-medium text-[#06A7FF]"
               style={{ display: folderPath ? 'flex' : 'none' }}
             >
               <span
@@ -577,7 +577,7 @@ export default function FilePage() {
                             color:
                               folderPath.split('/').slice(-1)[0] == value
                                 ? 'black'
-                                : ''
+                                : '',
                           }}
                           onClick={() => {
                             folderPath.split('/').slice(-1)[0] != value &&
@@ -597,11 +597,11 @@ export default function FilePage() {
                   })}
             </div>
           </div>
-          <div className="flex-1 grid grid-col-1 grid-rows-[repeat(auto-fit,50px)] overflow-auto shadow-[0px_1px_5px_rgba(0,0,0,0.05)]">
+          <div className="grid-col-1 grid flex-1 grid-rows-[repeat(auto-fit,50px)] overflow-auto shadow-[0px_1px_5px_rgba(0,0,0,0.05)]">
             {folders?.map((value, index) => {
               return (
                 <div
-                  className="w-full h-[50px] gap-[20px] text-sm flex items-center px-8 hover:bg-[#FAFAFC]"
+                  className="flex h-[50px] w-full items-center gap-[20px] px-8 text-sm hover:bg-[#FAFAFC]"
                   onClick={() => {
                     setFolderPath(`${folderPath}/${value.name}`)
                   }}
@@ -625,9 +625,9 @@ export default function FilePage() {
               )
             })}
           </div>
-          <div className="h-[80px] px-8 gap-[24px] flex items-center justify-end">
+          <div className="flex h-[80px] items-center justify-end gap-[24px] px-8">
             <div
-              className="h-[35px] w-[80px] cursor-pointer flex items-center justify-center rounded-full font-semibold bg-[#E2E8F0] text-[#64748B]"
+              className="flex h-[35px] w-[80px] cursor-pointer items-center justify-center rounded-full bg-[#E2E8F0] font-semibold text-[#64748B]"
               onClick={() => {
                 setMoveFile(false)
                 setFolderPath('')
@@ -637,7 +637,7 @@ export default function FilePage() {
               取消
             </div>
             <div
-              className="h-[35px] w-[120px] cursor-pointer flex items-center justify-center rounded-full font-semibold bg-[#64748B] text-white"
+              className="flex h-[35px] w-[120px] cursor-pointer items-center justify-center rounded-full bg-[#64748B] font-semibold text-white"
               onClick={() => {
                 pasteFileOrFolder(
                   currentItem?.path as string,
@@ -655,7 +655,7 @@ export default function FilePage() {
         </div>
       </div>
       <div
-        className="w-screen h-screen flex"
+        className="flex h-screen w-screen"
         onClick={() => {
           if (showMenu) {
             setShowMenu(false)
@@ -674,13 +674,13 @@ export default function FilePage() {
           mousePosition={mousePosition}
           index={currentIndex}
         />
-        <div className="hidden md:block w-[18%] p-6 bg-[#f9fafb]">
-          <div className="w-full h-full flex flex-col items-center">
+        <div className="hidden w-[18%] bg-[#f9fafb] p-6 md:block">
+          <div className="flex h-full w-full flex-col items-center">
             <div
               onClick={() => {
                 setTargetPath('')
               }}
-              className="w-full cursor-pointer h-[2.5rem] text-[#707070] font-bold flex items-center text-base md:max-xl:text:lg xl:text-xl justify-around"
+              className="md:max-xl:text:lg flex h-[2.5rem] w-full cursor-pointer items-center justify-around text-base font-bold text-[#707070] xl:text-xl"
             >
               <div
                 onClick={() => {
@@ -690,9 +690,9 @@ export default function FilePage() {
                   transform: expandCategories
                     ? 'rotate(90deg)'
                     : 'rotate(0deg)',
-                  transition: 'all 0.3s ease-in-out'
+                  transition: 'all 0.3s ease-in-out',
                 }}
-                className="w-[8%] h-1/2 flex items-center justify-center cursor-pointer"
+                className="flex h-1/2 w-[8%] cursor-pointer items-center justify-center"
               >
                 <svg viewBox="0 0 1024 1024" width="0.5rem" height="0.5rem">
                   <path
@@ -719,14 +719,14 @@ export default function FilePage() {
                 transform: expandCategories ? 'scaleY(1)' : 'scaleY(0)',
                 transformOrigin: 'top',
                 opacity: expandCategories ? 1 : 0,
-                transition: 'all 0.35s ease'
+                transition: 'all 0.35s ease',
               }}
-              className="w-full flex flex-col items-center"
+              className="flex w-full flex-col items-center"
             >
               {expandCategories &&
                 categorise.map((value) => {
                   return (
-                    <div className="w-full rounded-lg cursor-pointer hover:bg-[#f3f4f6] gap-4 h-[2.5rem] text-[#707070] font-semibold flex items-center text-xs md:text-sm justify-center">
+                    <div className="flex h-[2.5rem] w-full cursor-pointer items-center justify-center gap-4 rounded-lg text-xs font-semibold text-[#707070] hover:bg-[#f3f4f6] md:text-sm">
                       {value.component}
                       <div className="hidden xl:block">{value.name}</div>
                     </div>
@@ -735,21 +735,21 @@ export default function FilePage() {
             </div>
           </div>
         </div>
-        <div className="block md:hidden z-10 absolute h-full bg-[#f9fafb]">
+        <div className="absolute z-10 block h-full bg-[#f9fafb] md:hidden">
           <div className="relative">
             <div
               style={{
                 opacity: showLeftBar ? 1 : 0,
                 width: showLeftBar ? '70vw' : '0vw',
-                transition: 'all 0.3s ease'
+                transition: 'all 0.3s ease',
               }}
             >
-              <div className="w-full h-full flex flex-col items-center p-8">
+              <div className="flex h-full w-full flex-col items-center p-8">
                 <div
                   onClick={() => {
                     setTargetPath('')
                   }}
-                  className="w-full cursor-pointer h-[2.5rem] text-[#707070] font-bold flex items-center text-base md:max-xl:text:lg xl:text-xl justify-around"
+                  className="md:max-xl:text:lg flex h-[2.5rem] w-full cursor-pointer items-center justify-around text-base font-bold text-[#707070] xl:text-xl"
                 >
                   <div
                     onClick={() => {
@@ -759,9 +759,9 @@ export default function FilePage() {
                       transform: expandCategories
                         ? 'rotate(90deg)'
                         : 'rotate(0deg)',
-                      transition: 'all 0.3s ease-in-out'
+                      transition: 'all 0.3s ease-in-out',
                     }}
-                    className="w-[8%] h-1/2 flex items-center justify-center cursor-pointer"
+                    className="flex h-1/2 w-[8%] cursor-pointer items-center justify-center"
                   >
                     <ExpandIconA />
                   </div>
@@ -781,14 +781,14 @@ export default function FilePage() {
                     transform: expandCategories ? 'scaleY(1)' : 'scaleY(0)',
                     transformOrigin: 'top',
                     opacity: expandCategories ? 1 : 0,
-                    transition: 'all 0.35s ease'
+                    transition: 'all 0.35s ease',
                   }}
-                  className="w-full flex flex-col items-center"
+                  className="flex w-full flex-col items-center"
                 >
                   {expandCategories &&
                     categorise.map((value) => {
                       return (
-                        <div className="w-full rounded-lg cursor-pointer hover:bg-[#f3f4f6] gap-4 h-[2.5rem] text-[#707070] font-semibold flex items-center text-xs md:text-sm justify-center">
+                        <div className="flex h-[2.5rem] w-full cursor-pointer items-center justify-center gap-4 rounded-lg text-xs font-semibold text-[#707070] hover:bg-[#f3f4f6] md:text-sm">
                           {value.component}
                           <div>{value.name}</div>
                         </div>
@@ -798,11 +798,11 @@ export default function FilePage() {
               </div>
             </div>
             <div
-              className="absolute w-[6vw] h-[6vw] cursor-pointer rounded-full bg-[#f9fafb] top-[15vw] flex items-center justify-center"
+              className="absolute top-[15vw] flex h-[6vw] w-[6vw] cursor-pointer items-center justify-center rounded-full bg-[#f9fafb]"
               style={{
                 left: showLeftBar ? '68vw' : '2vw',
                 transform: showLeftBar ? 'rotate(90deg)' : 'rotate(-90deg)',
-                transition: 'all 0.3s ease-in-out'
+                transition: 'all 0.3s ease-in-out',
               }}
               onClick={() => {
                 setShowLeftBar(!showLeftBar)
@@ -812,18 +812,18 @@ export default function FilePage() {
             </div>
           </div>
         </div>
-        <div className="h-full w-full z-0 flex flex-col md:w-[82%]">
-          <div className="h-[8%] text-[#64748b] px-8 flex justify-between font-bold md:text-xl items-center py-6 shadow-[0px_1px_4px_rgba(0,0,0,0.1)]">
+        <div className="z-0 flex h-full w-full flex-col md:w-[82%]">
+          <div className="flex h-[8%] items-center justify-between px-8 py-6 font-bold text-[#64748b] shadow-[0px_1px_4px_rgba(0,0,0,0.1)] md:text-xl">
             <div>File Management</div>
             <div className="cursor-pointer">
               <UserIcon />
             </div>
           </div>
-          <div className="h-[92%] p-[3%] flex">
-            <div className="w-full md:w-[71%] flex flex-col py-2 rounded-lg shadow-[0_0_1px_2px_rgba(0,0,0,0.05)]">
-              <div className="w-full px-[4%] gap-[2.5%] font-semibold flex text-xs md:text-sm items-center h-[3.2rem] ">
+          <div className="flex h-[92%] p-[3%]">
+            <div className="flex w-full flex-col rounded-lg py-2 shadow-[0_0_1px_2px_rgba(0,0,0,0.05)] md:w-[71%]">
+              <div className="flex h-[3.2rem] w-full items-center gap-[2.5%] px-[4%] text-xs font-semibold md:text-sm">
                 <div
-                  className="h-[2rem] cursor-pointer w-[15%] bg-[#64748b] text-[#ffffff] rounded-full flex items-center gap-x-2 justify-center"
+                  className="flex h-[2rem] w-[15%] cursor-pointer items-center justify-center gap-x-2 rounded-full bg-[#64748b] text-[#ffffff]"
                   onClick={uploadClick}
                 >
                   <input
@@ -840,18 +840,18 @@ export default function FilePage() {
                   <div className="hidden xl:block">上传</div>
                 </div>
                 <div
-                  className="h-[2rem] cursor-pointer w-[20%] min-w-[6rem] bg-[#e2e8f0] text-[#64748b] rounded-full flex items-center justify-center"
+                  className="flex h-[2rem] w-[20%] min-w-[6rem] cursor-pointer items-center justify-center rounded-full bg-[#e2e8f0] text-[#64748b]"
                   onClick={() => createFolder()}
                 >
                   新建文件夹
                 </div>
               </div>
-              <div className="w-full h-[1.8rem] px-[3%] w-full text-xs font-semibold flex items-center">
+              <div className="flex h-[1.8rem] w-full items-center px-[3%] text-xs font-semibold">
                 <div style={{ display: targetPath ? 'none' : 'block' }}>
                   全部文件
                 </div>
                 <div
-                  className="flex gap-[6px] text-[#06A7FF] font-medium"
+                  className="flex gap-[6px] font-medium text-[#06A7FF]"
                   style={{ display: targetPath ? 'flex' : 'none' }}
                 >
                   <span
@@ -887,7 +887,7 @@ export default function FilePage() {
                                 color:
                                   targetPath.split('/').slice(-1)[0] == value
                                     ? 'black'
-                                    : ''
+                                    : '',
                               }}
                               onClick={() => {
                                 targetPath.split('/').slice(-1)[0] != value &&
@@ -908,17 +908,18 @@ export default function FilePage() {
                 </div>
               </div>
               <div
-                className="w-full flex-1 grid grid-cols-[repeat(auto-fit,140px)] grid-rows-[repeat(auto-fit,170px)] overflow-auto"
+                className="grid w-full flex-1 grid-cols-[repeat(auto-fit,140px)] grid-rows-[repeat(auto-fit,170px)] overflow-auto"
                 style={{
-                  display: !loading && filesAndFolders.length ? 'grid' : 'block'
+                  display:
+                    !loading && filesAndFolders.length ? 'grid' : 'block',
                 }}
               >
                 {filesAndFolders.map((item, index) => {
                   return (
-                    <div className="w-[140px] h-[150px] flex flex-col items-center justify-center pl-[30px] pb-[20px]">
+                    <div className="flex h-[150px] w-[140px] flex-col items-center justify-center pb-[20px] pl-[30px]">
                       <div
                         key={index}
-                        className="w-full h-full flex flex-col rounded-lg items-center hover:bg-[#f4f4f5] px-2"
+                        className="flex h-full w-full flex-col items-center rounded-lg px-2 hover:bg-[#f4f4f5]"
                         onContextMenu={(e) => {
                           setRenameInput(undefined)
                           onContextMenu(e, item, index)
@@ -959,14 +960,14 @@ export default function FilePage() {
                           }
                         }}
                         style={{
-                          backgroundColor: item == currentItem ? '#F2FAFF' : ''
+                          backgroundColor: item == currentItem ? '#F2FAFF' : '',
                         }}
                       >
                         <div className="h-[20px]"></div>
                         <div className="h-[50px]">{getIcon(item)}</div>
                         <div className="h-[10px]"></div>
-                        <div className="h-[50px] flex flex-col items-center gap-[5px]">
-                          <div className="w-full text-xs text-center">
+                        <div className="flex h-[50px] flex-col items-center gap-[5px]">
+                          <div className="w-full text-center text-xs">
                             <Input
                               key={index}
                               ref={(e) => {
@@ -981,7 +982,7 @@ export default function FilePage() {
                                   currentItem == item &&
                                   renameInput != undefined
                                     ? ''
-                                    : 'none'
+                                    : 'none',
                               }}
                               onChange={(value) => setRenameInput(value)}
                               onClick={(e) => {
@@ -1000,12 +1001,12 @@ export default function FilePage() {
                                   currentItem == item &&
                                   renameInput != undefined
                                     ? 'none'
-                                    : ''
+                                    : '',
                               }}
                             >
                               <div
                                 style={{
-                                  display: item.size != null ? 'block' : 'none'
+                                  display: item.size != null ? 'block' : 'none',
                                 }}
                               >
                                 {item.name
@@ -1020,7 +1021,7 @@ export default function FilePage() {
                               </div>
                               <div
                                 style={{
-                                  display: item.size == null ? 'block' : 'none'
+                                  display: item.size == null ? 'block' : 'none',
                                 }}
                               >
                                 {item.size == null && item.name.length >= 15
@@ -1029,7 +1030,7 @@ export default function FilePage() {
                               </div>
                             </div>
                           </div>
-                          <div className="w-full text-xs text-center text-[#737373]">
+                          <div className="w-full text-center text-xs text-[#737373]">
                             {`${item.lastModefined.getMonth() + 1}-${
                               item.lastModefined.getDate() + 1
                             } ${
@@ -1045,9 +1046,10 @@ export default function FilePage() {
                 })}
 
                 <div
-                  className="w-full h-full items-center justify-center"
+                  className="h-full w-full items-center justify-center"
                   style={{
-                    display: filesAndFolders.length || loading ? 'none' : 'flex'
+                    display:
+                      filesAndFolders.length || loading ? 'none' : 'flex',
                   }}
                 >
                   <img
@@ -1055,14 +1057,14 @@ export default function FilePage() {
                     alt="nth"
                     style={{
                       height: '60%',
-                      width: '50%'
+                      width: '50%',
                     }}
                   ></img>
                 </div>
               </div>
             </div>
-            <div className="hidden md:block w-[3%] min-w-8 h-full"></div>
-            <div className="hidden md:flex w-[26%] h-full flex-col">
+            <div className="hidden h-full w-[3%] min-w-8 md:block"></div>
+            <div className="hidden h-full w-[26%] flex-col md:flex">
               <div className="flex-1 rounded-lg shadow-[0_0_1px_2px_rgba(0,0,0,0.05)]"></div>
               <div className="h-[2rem]"></div>
               <div className="flex-1 rounded-lg shadow-[0_0_1px_2px_rgba(0,0,0,0.05)]"></div>

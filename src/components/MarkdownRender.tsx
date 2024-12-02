@@ -5,12 +5,14 @@ import 'github-markdown-css'
 
 const mdParser = new markdownit()
 
-mdParser.use(await Shiki({
-   themes: {
-     light: 'material-theme-lighter',
-     dark: 'material-theme-palenight',
-   },
- }))
+mdParser.use(
+  await Shiki({
+    themes: {
+      light: 'material-theme-lighter',
+      dark: 'material-theme-palenight',
+    },
+  })
+)
 
 const MarkdownRender = ({ md }: { md: string }) => {
   const htmlContent = mdParser.render(md)

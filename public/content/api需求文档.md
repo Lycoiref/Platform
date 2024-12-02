@@ -10,9 +10,9 @@
 
 ### 1. 注册接口
 
--   **URL**: `/api/register`
--   **请求方式**: `POST`
--   **描述**: 注册新用户，成功后返回用户信息和认证 Token。
+- **URL**: `/api/register`
+- **请求方式**: `POST`
+- **描述**: 注册新用户，成功后返回用户信息和认证 Token。
 
 #### 请求参数
 
@@ -28,9 +28,9 @@ POST /api/register Content-Type: application/json
 
 ```json
 {
-	"username": "exampleUser",
-	"password": "examplePassword",
-	"email": "example@example.com"
+  "username": "exampleUser",
+  "password": "examplePassword",
+  "email": "example@example.com"
 }
 ```
 
@@ -47,10 +47,10 @@ POST /api/register Content-Type: application/json
 
 ```json
 {
-	"userId": "12345",
-	"username": "exampleUser",
-	"email": "example@example.com",
-	"token": "eyJhbGciOiJIUzI1NiIsInR5cCI..."
+  "userId": "12345",
+  "username": "exampleUser",
+  "email": "example@example.com",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI..."
 }
 ```
 
@@ -65,9 +65,9 @@ POST /api/register Content-Type: application/json
 
 ### 2. 登录接口
 
--   **URL**: `/api/login`
--   **请求方式**: `POST`
--   **描述**: 用户登录，成功后返回用户信息和认证 Token。
+- **URL**: `/api/login`
+- **请求方式**: `POST`
+- **描述**: 用户登录，成功后返回用户信息和认证 Token。
 
 #### 请求参数
 
@@ -97,10 +97,10 @@ POST /api/login Content-Type: application/json
 
 ```json
 {
-	"userId": "12345",
-	"username": "exampleUser",
-	"email": "example@example.com",
-	"token": "eyJhbGciOiJIUzI1NiIsInR5cCI..."
+  "userId": "12345",
+  "username": "exampleUser",
+  "email": "example@example.com",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI..."
 }
 ```
 
@@ -115,12 +115,12 @@ POST /api/login Content-Type: application/json
 
 ## 认证机制
 
--   **Token 类型**: `JWT`
--   **存放方式**: 客户端需将 Token 保存在`Authorization`请求头中，格式如下：
+- **Token 类型**: `JWT`
+- **存放方式**: 客户端需将 Token 保存在`Authorization`请求头中，格式如下：
 
-    -   Authorization: Bearer <token>
+  - Authorization: Bearer <token>
 
--   **Token 有效期**: 根据系统配置决定有效期，Token 过期需重新登录。
+- **Token 有效期**: 根据系统配置决定有效期，Token 过期需重新登录。
 
 ---
 

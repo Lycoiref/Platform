@@ -2,7 +2,5 @@
   "files.associations": {
     "*.json": "jsonc"
   },
-  "rust-analyzer.linkedProjects": [
-    "${workspaceFolder}/server/rust/Cargo.toml"
-  ]
+  "rust-analyzer.linkedProjects": ["${workspaceFolder}/server/rust/Cargo.toml"]
 }

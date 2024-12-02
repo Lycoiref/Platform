@@ -1,10 +1,10 @@
 {
-	"name": "golang-core",
-	"description": "server核心服务，微服务调度中心",
-	"version": "1.0.0",
-	"scripts": {
-		"build": "go build"
-	},
-	"dependencies": {},
-	"devDependencies": {}
+  "name": "golang-core",
+  "description": "server核心服务，微服务调度中心",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "go build"
+  },
+  "dependencies": {},
+  "devDependencies": {}
 }
