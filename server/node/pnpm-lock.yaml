@@ -17,9 +17,6 @@ importers:
       '@prisma/client':
         specifier: ^5.19.1
         version: 5.22.0(prisma@5.22.0)
-      archiver:
-        specifier: ~7.0.1
-        version: 7.0.1
       bcrypt:
         specifier: ~5.1.1
         version: 5.1.1
@@ -96,6 +93,9 @@ importers:
       '@types/nodemailer':
         specifier: ^6.4.16
         version: 6.4.17
+      archiver:
+        specifier: ~7.0.1
+        version: 7.0.1
       prisma:
         specifier: ^5.18.0
         version: 5.22.0
