@@ -27,10 +27,10 @@ jobs:
             git pull
             pnpm install
             pnpm run build
-            pm2 restart platform || pm2 start yarn -n "platform" --cwd /HelloWorld/Platform/packages/platform -- run start
+            pm2 restart platform || pm2 start yarn -n "platform" --cwd /home/helloworld/website/Platform/ -- run start
             cd server/node
             pnpm install
             npx prisma generate
             npx prisma db pull
-            pm2 restart platform-server || pm2 start yarn -n "platform-server" --cwd /HelloWorld/Platform/server/node -- run start 
+            pm2 restart platform-server || pm2 start yarn -n "platform-server" --cwd /home/helloworld/website/Platform/server/node -- run start 
           EOF
