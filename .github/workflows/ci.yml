@@ -13,15 +13,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      # 安装依赖 (没必要)
-      # - name: Set up Node.js
-      #   uses: actions/setup-node@v3
-      #   with:
-      #     node-version: '20.16.0'
-      # - name: Install dependencies
-      #   run: cd packages/platform && yarn
-      # - name: Build
-      #   run: cd packages/platform && yarn build
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
@@ -31,16 +22,15 @@ jobs:
       - name: Deploy to HelloWord Service
         run: |
           ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
-          cd /HelloWorld/Platform
+          cd ~/website/Platform
             git reset --hard
             git pull
-            cd packages/platform
-            yarn install
-            yarn run build
+            pnpm install
+            pnpm run build
             pm2 restart platform || pm2 start yarn -n "platform" --cwd /HelloWorld/Platform/packages/platform -- run start
-            cd /HelloWorld/Platform/server/node
+            cd server/node
+            pnpm install
             npx prisma generate
             npx prisma db pull
-            yarn
             pm2 restart platform-server || pm2 start yarn -n "platform-server" --cwd /HelloWorld/Platform/server/node -- run start 
           EOF
