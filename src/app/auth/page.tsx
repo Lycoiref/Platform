@@ -15,7 +15,7 @@ const LineInput = ({
   return (
     <input
       type={type}
-      className="border-b-2 border-black focus:border-b-3 w-3/5 pl-1 pb-1"
+      className="focus:border-b-3 w-3/5 border-b-2 border-black pb-1 pl-1"
       placeholder={placeholder}
       {...props}
     />
@@ -41,12 +41,12 @@ const AuthForm = (props: AuthFormProps) => {
     const res = await fetch(`${baseUrl}/api/auth/login`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         emailOrUsername: username,
-        password
-      })
+        password,
+      }),
     })
 
     const data = await res.json()
@@ -73,13 +73,13 @@ const AuthForm = (props: AuthFormProps) => {
     const res = await fetch(`${baseUrl}/api/auth/register`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         username,
         email,
-        password
-      })
+        password,
+      }),
     })
 
     const data = await res.json()
@@ -93,8 +93,8 @@ const AuthForm = (props: AuthFormProps) => {
   }
 
   return (
-    <div className="right flex flex-col justify-center flex-grow h-full items-center gap-4 px-8">
-      <div className="self-start text-2xl mb-8 ml-10 font-black">
+    <div className="right flex h-full flex-grow flex-col items-center justify-center gap-4 px-8">
+      <div className="mb-8 ml-10 self-start text-2xl font-black">
         <div className="line">{type === 'login' ? '登录到' : '注册到'}</div>
         <div className="line">
           <ReactTypingEffect
@@ -148,7 +148,7 @@ const AuthForm = (props: AuthFormProps) => {
         </>
       )}
       {type === 'login' ? (
-        <div className="self-end text-sm gap-2 flex mr-10">
+        <div className="mr-10 flex gap-2 self-end text-sm">
           {/* TODO: 换成Link到忘记密码页面 */}
           <div>忘记密码？</div>
           <div className="cursor-pointer" onClick={() => toggleType()}>
@@ -156,7 +156,7 @@ const AuthForm = (props: AuthFormProps) => {
           </div>
         </div>
       ) : (
-        <div className="self-end text-sm gap-2 flex mr-10">
+        <div className="mr-10 flex gap-2 self-end text-sm">
           <div className="cursor-pointer" onClick={() => toggleType()}>
             已有账号？登录账号
           </div>
@@ -165,14 +165,14 @@ const AuthForm = (props: AuthFormProps) => {
       {type === 'login' ? (
         <button
           onClick={handleLogin}
-          className="bg-black text-white rounded p-2 w-3/5 hover:shadow-2xl transition-all"
+          className="w-3/5 rounded bg-black p-2 text-white transition-all hover:shadow-2xl"
         >
           登录
         </button>
       ) : (
         <button
           onClick={handleRegister}
-          className="bg-black text-white rounded p-2 w-3/5 hover:shadow-2xl transition-all"
+          className="w-3/5 rounded bg-black p-2 text-white transition-all hover:shadow-2xl"
         >
           注册
         </button>
@@ -194,23 +194,23 @@ const Auth = () => {
   }
 
   return (
-    <div className="w-screen h-screen flex justify-center items-center">
+    <div className="flex h-screen w-screen items-center justify-center">
       <Image
         width={400}
         height={400}
-        className="fixed left-0 bottom-0"
+        className="fixed bottom-0 left-0"
         src="/Kotone_Fujita.webp"
         alt="琴音"
       />
-      <div className="login-box w-[750px] h-[450px] flex items-center bg-white rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl hover:scale-[102%] transition-all z-10">
-        <div className="left h-full rounded-2xl overflow-hidden shadow-2xl">
+      <div className="login-box z-10 flex h-[450px] w-[750px] items-center overflow-hidden rounded-2xl bg-white shadow-xl transition-all hover:scale-[102%] hover:shadow-2xl">
+        <div className="left h-full overflow-hidden rounded-2xl shadow-2xl">
           <Image
             width={300}
             height={400}
             src="/美游.jpg"
             alt="美游"
             style={{
-              height: '100%'
+              height: '100%',
             }}
           />
         </div>

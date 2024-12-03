@@ -1,41 +1,55 @@
-import Router from "@koa/router"
+import Router from '@koa/router'
 import koaBody from 'koa-body'
 import path from 'path'
 
-import { Context } from "koa"
-import { uploadFileOrFolder , filesReader , deleteFileOrFolder, renameFileOrFolder, createFolder, pasteFileOrFolder, fileOrFolderDownloader, mergeUploadedChunk} from '../../../controller/fileController'
+import { Context } from 'koa'
+import {
+  uploadFileOrFolder,
+  filesReader,
+  deleteFileOrFolder,
+  renameFileOrFolder,
+  createFolder,
+  pasteFileOrFolder,
+  fileOrFolderDownloader,
+  mergeUploadedChunk,
+} from '../../../controller/fileController'
 
-type Next = () => Promise<void>;
+type Next = () => Promise<void>
 
 const router = new Router()
 
 const dynamicKoaBody = (ctx: Context, next: Next) => {
   const { pathQuery } = ctx.query
-  const uploadDir = path.join(__dirname, '../../../../files', pathQuery as string ,'upload') 
+  const uploadDir = path.join(
+    __dirname,
+    '../../../../files',
+    pathQuery as string,
+    'upload'
+  )
   return koaBody({
     multipart: true,
     formidable: {
-      uploadDir: uploadDir, 
+      uploadDir: uploadDir,
       keepExtensions: true,
-      maxFileSize: 10 * 1024 * 1024 * 1024, 
+      maxFileSize: 10 * 1024 * 1024 * 1024,
     },
-  })(ctx, next);
-};
+  })(ctx, next)
+}
 
 router.get('/reader', filesReader)
 
-router.post('/upload', dynamicKoaBody , uploadFileOrFolder)
+router.post('/upload', dynamicKoaBody, uploadFileOrFolder)
 
 router.get('/delete', deleteFileOrFolder)
 
-router.get('/rename',renameFileOrFolder)
+router.get('/rename', renameFileOrFolder)
 
-router.get('/create',createFolder)
+router.get('/create', createFolder)
 
-router.get('/paste',pasteFileOrFolder)
+router.get('/paste', pasteFileOrFolder)
 
 router.get('/downloadOne', fileOrFolderDownloader)
 
-router.get('/merge',mergeUploadedChunk)
+router.get('/merge', mergeUploadedChunk)
 
 export default router

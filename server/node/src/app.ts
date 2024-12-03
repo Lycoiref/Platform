@@ -21,8 +21,8 @@ app.use(bodyParser())
 app.use(cors())
 // Prisma middleware
 app.use(async (ctx, next) => {
-	ctx.prisma = prisma
-	await next()
+  ctx.prisma = prisma
+  await next()
 })
 
 // Serve static files
@@ -30,28 +30,28 @@ app.use(serve(path.join(__dirname, 'public')))
 
 // Basic route
 router.get('/', async (ctx) => {
-	ctx.body = 'Hello World!'
+  ctx.body = 'Hello World!'
 })
 
 // Example of a protected route
 router.get('/protected', async (ctx) => {
-	// Example middleware for protected route
-	if (!ctx.request.headers.authorization) {
-		ctx.status = 401
-		ctx.body = 'Unauthorized'
-		return
-	}
-	ctx.body = 'Protected Content'
+  // Example middleware for protected route
+  if (!ctx.request.headers.authorization) {
+    ctx.status = 401
+    ctx.body = 'Unauthorized'
+    return
+  }
+  ctx.body = 'Protected Content'
 })
 
 // Swagger UI (if you use Swagger for API documentation)
 app.use(
-	koaSwagger({
-		routePrefix: '/swagger',
-		swaggerOptions: {
-			url: '/swagger.json',
-		},
-	})
+  koaSwagger({
+    routePrefix: '/swagger',
+    swaggerOptions: {
+      url: '/swagger.json',
+    },
+  })
 )
 
 // Register routes
@@ -64,13 +64,13 @@ app.use(errorHandler)
 
 // Error event listener
 app.on('error', (err, ctx) => {
-	console.error('Server error', err, ctx)
+  console.error('Server error', err, ctx)
 })
 
 // Start the server
 const PORT = process.env.PORT || 6677
 app.listen(PORT, () => {
-	console.log(`Server running on http://localhost:${PORT}`)
+  console.log(`Server running on http://localhost:${PORT}`)
 })
 
 export default app

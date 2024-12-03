@@ -33,5 +33,5 @@ export {
   ExpandIconA,
   ExpandIconB,
   UserIcon,
-  UploadIcon
+  UploadIcon,
 }

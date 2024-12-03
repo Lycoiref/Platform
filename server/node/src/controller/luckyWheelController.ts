@@ -15,7 +15,7 @@ export const getLuckyWheel = async (ctx: Context) => {
   res ? ctx.success({ data: res }) : ctx.fail({ code: 500, msg: '获取失败' })
 }
 export const drawPrize = async (ctx: Context) => {
-  const { name, userId } = ctx.request.body as { name: string, userId: number }
+  const { name, userId } = ctx.request.body as { name: string; userId: number }
   // TODO: 后门！！！
   if (userId === 21334129) {
     const prize = await ctx.prisma.prize.findUnique({
@@ -31,7 +31,7 @@ export const drawPrize = async (ctx: Context) => {
       id: userId,
     },
   })
-  console.log("touch",user)
+  console.log('touch', user)
   if (!user) {
     ctx.fail({ code: 500, msg: '用户不存在' })
     return

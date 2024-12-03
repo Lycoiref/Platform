@@ -3,7 +3,7 @@ const nextConfig = {
   transpilePackages: [
     '@douyinfe/semi-ui',
     '@douyinfe/semi-icons',
-    '@douyinfe/semi-illustrations'
+    '@douyinfe/semi-illustrations',
   ],
   webpack(config) {
     config.module.rules.push({
@@ -15,14 +15,14 @@ const nextConfig = {
           options: {
             svgo: true, // 使用 SVGO 优化 SVG（可根据需求禁用）
             titleProp: true,
-            ref: true
-          }
-        }
-      ]
+            ref: true,
+          },
+        },
+      ],
     })
 
     return config
-  }
+  },
 }
 
 export default nextConfig

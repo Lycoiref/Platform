@@ -3,6 +3,6 @@ export function GET() {
 
   return Response.json({
     code: 200,
-    message: 'HelloWorld'
+    message: 'HelloWorld',
   })
 }
