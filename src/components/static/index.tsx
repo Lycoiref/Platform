@@ -3,7 +3,6 @@ import LeftBarMusic from './LeftBarMusic.svg'
 import LeftBarVideo from './LeftBarVideo.svg'
 import LeftBarPhoto from './LeftBarPhoto.svg'
 import LeftBarOthers from './LeftBarOthers.svg'
-import LeftBarExpand from './LefterBarExpand.svg'
 import LeftBarSet from './LeftBarSet.svg'
 import TypesFolder from './TypesFolder.svg'
 import TypesMarkDown from './TypesMarkDown.svg'
@@ -39,7 +38,6 @@ export {
   LeftBarVideo,
   LeftBarPhoto,
   LeftBarOthers,
-  LeftBarExpand,
   LeftBarSet,
   TypesFolder,
   TypesMarkDown,
