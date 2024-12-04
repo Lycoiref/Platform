@@ -24,6 +24,11 @@ app.use(async (ctx, next) => {
   ctx.prisma = prisma
   await next()
 })
+// 打印用户访问的路由
+app.use(async (ctx, next) => {
+  console.log(`User accessed ${ctx.method} ${ctx.url}`)
+  await next()
+})
 
 // Serve static files
 app.use(serve(path.join(__dirname, 'public')))
