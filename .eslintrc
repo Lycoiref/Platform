@@ -4,6 +4,9 @@
     "es2021": true,
     "node": true
   },
+  "ignorePatterns": [
+    "server/"
+  ],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended", // 添加TypeScript推荐规则
@@ -11,7 +14,7 @@
   ],
   "parser": "@typescript-eslint/parser", // 使用@typescript-eslint/parser作为解析器
   "parserOptions": {
-    "ecmaVersion": 12,
+    "ecmaVersion": 15,
     "sourceType": "module",
     "project": "./tsconfig.json" // 指向你的tsconfig.json文件
   },

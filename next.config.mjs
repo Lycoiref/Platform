@@ -1,9 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    // 注意: 这会在生产构建期间忽略所有 ESLint 错误!
-    ignoreDuringBuilds: true,
-  },
   transpilePackages: [
     '@douyinfe/semi-ui',
     '@douyinfe/semi-icons',
