@@ -1,6 +1,6 @@
 import { Context } from 'koa'
 import path from 'path'
-import fs, { copyFileSync, read, rmdirSync } from 'fs'
+import fs, { copyFileSync } from 'fs'
 import archiver from 'archiver'
 
 function copyFolder(oldFolderPath: string, newFolderPath: string) {
@@ -75,7 +75,8 @@ export const uploadFileOrFolder = async (ctx: Context) => {
       ctx.body = { message: 'File processing error.' }
       return
     }
-    const file: any = files.file
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const file: any = files.file 
     const dirPath = path.join(
       path.dirname(file.filepath),
       file.originalFilename.split('.')[0]
@@ -126,14 +127,14 @@ export const renameFileOrFolder = async (ctx: Context) => {
   const oldPath = path.join(
     __dirname,
     '../../files',
-    fpath != '0' ? (fpath as string) : '',
+    fpath !== '0' ? (fpath as string) : '',
     '/',
     originalName as string
   )
   const newPath = path.join(
     __dirname,
     '../../files',
-    fpath != '0' ? (fpath as string) : '',
+    fpath !== '0' ? (fpath as string) : '',
     '/',
     newName as string
   )
@@ -235,7 +236,7 @@ export const mergeUploadedChunk = async (ctx: Context) => {
     targetPath += `${i}`
   }
   targetPath += '.' + (name as string).split('.')[1]
-  const output = fs.writeFileSync(targetPath, '')
+  fs.writeFileSync(targetPath, '')
   uploadChunks.sort((a, b) => Number(a) - Number(b))
   for (const f of uploadChunks) {
     const chunkFile = fs.readFileSync(path.join(originalPath, f))

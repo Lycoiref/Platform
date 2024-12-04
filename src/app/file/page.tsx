@@ -1,7 +1,15 @@
 'use client'
-import { useLayoutEffect, useEffect, useRef, useState, ReactNode } from 'react'
+import { useLayoutEffect, useEffect, useRef, useState} from 'react'
 import { Input } from '@douyinfe/semi-ui'
 import {
+  ContextMenuCopy,
+  ContextMenuCut,
+  ContextMenuDelete,
+  ContextMenuDownload,
+  ContextMenuMove,
+  ContextMenuPaste,
+  ContextMenuRename,
+  LeftBarSet,
   LeftBarDocument,
   LeftBarMusic,
   LeftBarOthers,
@@ -28,8 +36,10 @@ interface FType {
   lastModefined: Date
 }
 
+type TypeOfFile = '.md' | '.pdf' | '.xlsx' | '.folder' | '.mp4' | '.mp3' | '.doc'
+
 export default function FilePage() {
-  const categorise: any[] = [
+  const categorise = [
     {
       id: 1,
       name: '文档',
@@ -56,7 +66,7 @@ export default function FilePage() {
       component: <LeftBarOthers />,
     },
   ]
-  const typesIcon: any = {
+  const typesIcon = {
     '.folder': <TypesFolder />,
     '.default': <TypesOthers />,
     '.md': <TypesMarkDown />,
@@ -80,7 +90,6 @@ export default function FilePage() {
   const [currentItem, setCurrentItem] = useState<FType | null>()
   const [cutItem, setCutItem] = useState<FType | null>()
   const [copyItem, setCopyItem] = useState<FType | null>()
-  const [loading, setLoading] = useState(false)
   const [renameInput, setRenameInput] = useState<string | undefined>(undefined)
   const [currentIndex, setCurrentIndex] = useState(-1)
   const [showLeftBar, setShowLeftBar] = useState(false)
@@ -88,7 +97,7 @@ export default function FilePage() {
   const getIcon = (f: FType) => {
     if (f.size != null) {
       const extension = f.name.split('.').slice(-1)[0]
-      return typesIcon['.' + extension] || typesIcon['.default']
+      return typesIcon[('.' + extension) as TypeOfFile] || typesIcon['.default']
     } else return typesIcon['.folder']
   }
 
@@ -119,7 +128,7 @@ export default function FilePage() {
       }
       setFilesAndFolders(temp)
     } catch (error) {
-      console.log('文件读取错误 ):')
+      console.log('文件读取错误 ):',error)
       setTargetPath('')
       return
     }
@@ -156,19 +165,18 @@ export default function FilePage() {
     if (fsize != null) {
       url += '&type=file'
     } else url += '&type=folder'
-    const response = await fetch(url)
+    await fetch(url)
     filesReader()
   }
 
-  const createFolder = async () => {
-    const temp = filesAndFolders
-    temp.unshift({
+  const createFolder = () => {
+    setFilesAndFolders([{
       name: '',
       path: targetPath,
       size: null,
       lastModefined: new Date(),
-    })
-    setFilesAndFolders(temp)
+    },...filesAndFolders])
+    console.log(filesAndFolders)
     setCurrentItem(filesAndFolders[0])
     setCurrentIndex(0)
     setRenameInput('')
@@ -182,7 +190,7 @@ export default function FilePage() {
     let url = 'http://localhost:6677/api/file/create?'
     if (targetPath) url += `folderPath=${encodeURIComponent(targetPath)}&`
     url += `folderName=${encodeURIComponent(name)}`
-    const res = await fetch(url)
+    await fetch(url)
     filesReader()
   }
 
@@ -198,7 +206,7 @@ export default function FilePage() {
         'fpath=0&' +
         `originalName=${encodeURIComponent(f.name)}&` +
         `newName=${encodeURIComponent(newName)}`
-    const res = await fetch(url)
+    await fetch(url)
     filesReader()
   }
 
@@ -255,10 +263,10 @@ export default function FilePage() {
     url += `?pathQuery=${encodeURIComponent(targetPath)}`
 
     for (const file of files) {
-      const chunkSize = 1024 * 1024 * 5
+      const chunkSize = 1024 * 1024 *5
       let index = 0
       const [fname, fext] = file.name.split('.')
-      const promises: Promise<any>[] = []
+      const promises: Promise<Response>[] = []
       while (index * chunkSize < file.size) {
         const blob = file.slice(index * chunkSize, (index + 1) * chunkSize)
         const chunkFile = new File([blob], `${fname}.${index}.${fext}`)
@@ -267,7 +275,7 @@ export default function FilePage() {
         index++
         const res = fetch(url, {
           method: 'POST',
-          body: formData,
+          body: formData
         })
         promises.push(res)
       }
@@ -280,7 +288,7 @@ export default function FilePage() {
           )
         })
         .catch((error) => {
-          console.log('传送出错啦！本次传输暂停！！')
+          console.log('传送出错啦！本次传输暂停！！',error)
           return
         })
       filesReader()
@@ -302,13 +310,13 @@ export default function FilePage() {
     const y = e.clientY
     setMousePosition({ x, y })
     setShowMenu(true)
-    setCurrentItem(item)
+    setCurrentItem(item) 
     setCurrentIndex(index)
     // 全局状态管理 state zustand mobx
     // 最好别用 redux
   }
 
-  const ContextMenu = ({ item, mousePosition, index }: any) => {
+  const ContextMenu = ({ item, mousePosition }: {item:FType , mousePosition:{x:number,y:number}}) => {
     return (
       <div
         style={{
@@ -334,22 +342,7 @@ export default function FilePage() {
             downloadFileOrFolder(item)
           }}
         >
-          <div>
-            <svg viewBox="0 0 1024 1024" width="13px" height="13px">
-              <path
-                d="M511.985404 988.20397L354.645856 830.863205l31.692198-31.692197 125.64735 125.646134 125.647351-125.646134 31.693414 31.692197z"
-                fill="#2c2c2c"
-              ></path>
-              <path
-                d="M489.574876 549.16438h44.821057v390.984362h-44.821057z"
-                fill="#2c2c2c"
-              ></path>
-              <path
-                d="M802.862512 498.506247a292.347627 292.347627 0 0 0 3.606362-45.781943c0-160.264776-129.920251-290.18381-290.183811-290.183811-156.325145 0-283.755607 123.617328-289.927168 278.428166-98.420231 18.360213-172.926572 104.690313-172.926573 208.435553 0 117.112497 94.937933 212.051646 212.051646 212.051646l0.254209-0.002433v0.002433h50.690974v-44.821058H265.760287v-0.003649c-0.09244 0-0.184879 0.003649-0.278535 0.003649-44.669019 0-86.664586-17.394462-118.249748-48.98084-31.585162-31.585162-48.980841-73.580729-48.980841-118.249748s17.394462-86.664586 48.980841-118.249748c22.566216-22.566216 50.447712-37.88322 80.820212-44.794298a168.56853 168.56853 0 0 1 37.429536-4.186542c2.410728 0 4.811726 0.060816 7.205426 0.161769a249.539565 249.539565 0 0 1-1.764867-29.609873c0-5.121885 0.173932-10.217012 0.484091-15.286596 3.651365-59.787763 28.659934-115.491154 71.381639-158.211643 46.342662-46.342662 107.959757-71.865731 173.498239-71.86573 65.539698 0 127.155576 25.521852 173.498238 71.86573 46.342662 46.342662 71.865731 107.959757 71.865731 173.498239 0 16.313162-1.583637 32.383062-4.674283 48.035767a242.757415 242.757415 0 0 1-12.339474 42.018677h43.569473v0.029192c0.211638-0.001216 0.420844-0.013379 0.632482-0.01338 1.11779 0 2.233147 0.014596 3.346071 0.041355 35.320453 0.841687 68.400461 14.992248 93.471062 40.062849 25.861203 25.861203 40.102987 60.24388 40.102987 96.817133 0 36.573253-14.241785 70.95593-40.102987 96.817133-25.861203 25.861203-60.245096 40.102987-96.817133 40.102987l-0.063248-0.001216v0.001216h-72.483617v44.821057h76.492577v-0.049868c98.550376-2.099353 177.796681-82.63738 177.796682-181.691309-0.002433-95.656772-73.899403-174.050444-167.718329-181.210866z"
-                fill="#2c2c2c"
-              ></path>
-            </svg>
-          </div>
+          <ContextMenuDownload />
           <div>下载</div>
         </div>
         <div
@@ -363,21 +356,14 @@ export default function FilePage() {
             setShowMenu(false)
           }}
         >
-          <div>
-            <svg viewBox="0 0 1024 1024" width="14px" height="14px">
-              <path
-                d="M394.666667 106.666667h448a74.666667 74.666667 0 0 1 74.666666 74.666666v448a74.666667 74.666667 0 0 1-74.666666 74.666667H394.666667a74.666667 74.666667 0 0 1-74.666667-74.666667V181.333333a74.666667 74.666667 0 0 1 74.666667-74.666666z m0 64a10.666667 10.666667 0 0 0-10.666667 10.666666v448a10.666667 10.666667 0 0 0 10.666667 10.666667h448a10.666667 10.666667 0 0 0 10.666666-10.666667V181.333333a10.666667 10.666667 0 0 0-10.666666-10.666666H394.666667z m245.333333 597.333333a32 32 0 0 1 64 0v74.666667a74.666667 74.666667 0 0 1-74.666667 74.666666H181.333333a74.666667 74.666667 0 0 1-74.666666-74.666666V394.666667a74.666667 74.666667 0 0 1 74.666666-74.666667h74.666667a32 32 0 0 1 0 64h-74.666667a10.666667 10.666667 0 0 0-10.666666 10.666667v448a10.666667 10.666667 0 0 0 10.666666 10.666666h448a10.666667 10.666667 0 0 0 10.666667-10.666666v-74.666667z"
-                fill="#000000"
-                p-id="4220"
-              ></path>
-            </svg>
-          </div>
+          <ContextMenuCopy />
           <div>复制</div>
         </div>
         <div
           className="flex flex-1 cursor-pointer items-center gap-[14px] px-4 hover:bg-[#f4f4f5]"
           onClick={() => {
             if (cutItem != null) {
+              console.log(cutItem)
               pasteFileOrFolder(
                 cutItem.path,
                 targetPath + '/' + item.name + '/' + cutItem.name,
@@ -393,22 +379,7 @@ export default function FilePage() {
             }
           }}
         >
-          <div>
-            <svg viewBox="0 0 1024 1024" width="12px" height="12px">
-              <path
-                d="M640 1024a42.666667 42.666667 0 0 0 42.666667-42.666667V384a42.666667 42.666667 0 0 0-42.666667-42.666667H42.666667a42.666667 42.666667 0 0 0-42.666667 42.666667v597.333333a42.666667 42.666667 0 0 0 42.666667 42.666667h597.333333z m-42.666667-85.333333H85.333333V426.666667h512v512z"
-                p-id="5257"
-              ></path>
-              <path
-                d="M512 682.666667a42.666667 42.666667 0 0 1-42.666667 42.666666H213.333333a42.666667 42.666667 0 1 1 0-85.333333h256a42.666667 42.666667 0 0 1 42.666667 42.666667z"
-                p-id="5258"
-              ></path>
-              <path
-                d="M341.333333 512a42.666667 42.666667 0 0 1 42.666667 42.666667v256a42.666667 42.666667 0 1 1-85.333333 0v-256a42.666667 42.666667 0 0 1 42.666666-42.666667zM981.333333 682.666667a42.666667 42.666667 0 0 0 42.666667-42.666667V42.666667a42.666667 42.666667 0 0 0-42.666667-42.666667H384a42.666667 42.666667 0 0 0-42.666667 42.666667v170.666666a42.666667 42.666667 0 1 0 85.333334 0V85.333333h512v512h-106.666667a42.666667 42.666667 0 1 0 0 85.333334H981.333333z"
-                p-id="5259"
-              ></path>
-            </svg>
-          </div>
+          <ContextMenuPaste />
           <div>粘贴</div>
         </div>
         <div
@@ -420,14 +391,7 @@ export default function FilePage() {
             setShowMenu(false)
           }}
         >
-          <div>
-            <svg viewBox="0 0 1024 1024" width="14px" height="14px">
-              <path
-                d="M630.24 618.56L232.224 158.56a42.4 42.4 0 0 1 4.8-60.224 43.712 43.712 0 0 1 61.152 4.896l401.92 464.48c74.016-31.2 162.368-12.576 216.32 51.744 66.432 79.136 55.648 197.504-24.064 264.384-79.68 66.88-198.144 56.96-264.544-22.208-59.84-71.296-56.992-174.432 2.432-243.072z m60.256 27.2a124.064 124.064 0 0 0-43.968 94.784c0 68.864 56.224 124.704 125.6 124.704 69.344 0 125.568-55.84 125.568-124.704 0-68.864-56.224-124.704-125.568-124.704-22.752 0-44.096 6.016-62.496 16.512a42.688 42.688 0 0 1-5.6 5.696c-4.16 3.456-8.736 6.016-13.536 7.744z m-226.048-78.88l-57.344 66.272a44.48 44.48 0 0 1-1.12 1.216c47.232 67.936 45.568 161.28-9.824 227.264-66.4 79.136-184.864 89.088-264.544 22.208-79.712-66.88-90.496-185.28-24.096-264.384 58.496-69.728 157.408-85.76 234.592-42.816l57.792-66.784a128.48 128.48 0 0 0 64.544 57.024z m158.4-183.04a128.448 128.448 0 0 0-65.728-55.68l194.656-224.96a43.712 43.712 0 0 1 61.152-4.864 42.4 42.4 0 0 1 4.8 60.224l-194.88 225.28zM171.648 836.064c53.12 44.576 132.096 37.952 176.352-14.784 44.288-52.768 37.12-131.68-16.032-176.256-53.12-44.576-132.096-37.952-176.384 14.784-44.256 52.768-37.056 131.68 16.064 176.256z"
-                fill="#2c2c2c"
-              ></path>
-            </svg>
-          </div>
+          <ContextMenuCut />
           <div>剪切</div>
         </div>
         <div
@@ -440,18 +404,7 @@ export default function FilePage() {
             setMoveFile(true)
           }}
         >
-          <div>
-            <svg viewBox="0 0 1024 1024" width="14px" height="14px">
-              <path
-                d="M861.0304 290.816a32.3072 32.3072 0 0 1-23.2448-10.24l-73.5232-78.7968-73.5232 78.7456a31.9488 31.9488 0 1 1-46.4384-43.8784L742.4 132.096a32.3072 32.3072 0 0 1 23.2448-10.24 30.208 30.208 0 0 1 23.2448 10.24l98.048 104.4992A32.3072 32.3072 0 0 1 885.76 281.6a52.224 52.224 0 0 1-24.5248 9.0112zM762.88 911.36a30.208 30.208 0 0 1-23.2448-10.24l-98.048-104.4992a31.9488 31.9488 0 1 1 46.5408-43.9808l73.5232 78.6944L835.2256 752.64a31.9488 31.9488 0 0 1 46.4384 43.8784L783.616 901.12c-2.56 6.4512-11.6224 10.24-20.48 10.24z"
-                fill="#2c2c2c"
-              ></path>
-              <path
-                d="M762.88 859.8528a31.9488 31.9488 0 0 1-32.256-32.256V200.4992a32.256 32.256 0 1 1 64.512 0v627.0976a31.9488 31.9488 0 0 1-32.256 32.256zM510.0544 374.6816H170.7008a32.256 32.256 0 0 1 0-64.512h339.3536a31.9488 31.9488 0 0 1 32.256 32.256 32.768 32.768 0 0 1-32.256 32.256zM510.0544 537.2928H170.7008a32.256 32.256 0 0 1 0-64.512h339.3536a31.9488 31.9488 0 0 1 32.256 32.256 32.768 32.768 0 0 1-32.256 32.256zM508.7744 723.0976H169.4208a32.256 32.256 0 1 1 0-64.512h339.3536a31.9488 31.9488 0 0 1 32.256 32.256 32.768 32.768 0 0 1-32.256 32.256z"
-                fill="#2c2c2c"
-              ></path>
-            </svg>
-          </div>
+          <ContextMenuMove />
           <div>移动</div>
         </div>
         <div
@@ -462,46 +415,14 @@ export default function FilePage() {
             setShowMenu(false)
           }}
         >
-          <div>
-            <svg viewBox="0 0 1024 1024" width="13px" height="13px">
-              <path
-                d="M627.498667 55.168l170.666666 170.666667a42.624 42.624 0 0 1 0 60.330666l-469.333333 469.333334A42.538667 42.538667 0 0 1 298.666667 768H128a42.666667 42.666667 0 0 1-42.666667-42.666667v-170.666666c0-11.306667 4.48-22.186667 12.501334-30.165334l469.333333-469.333333a42.624 42.624 0 0 1 60.330667 0zM896 896a42.666667 42.666667 0 0 1 0 85.333333H128a42.666667 42.666667 0 0 1 0-85.333333h768zM597.333333 145.664l-426.666666 426.666667V682.666667h110.336l426.666666-426.666667L597.333333 145.664z"
-                fill="#2c2c2c"
-              ></path>
-            </svg>
-          </div>
+          <ContextMenuRename />
           <div>重命名</div>
         </div>
         <div
           className="flex flex-1 cursor-pointer items-center gap-[12px] px-4 hover:bg-[#f4f4f5]"
           onClick={() => deleteFileOrFolder(item.name, item.size)}
         >
-          <div>
-            <svg viewBox="0 0 1024 1024" width="14px" height="14px">
-              <path
-                d="M883.640502 229.817249H139.689235a45.799295 45.799295 0 0 0 0 91.598589h743.951267a45.799295 45.799295 0 1 0 0-91.598589z"
-                fill="#2c2c2c"
-              ></path>
-              <path
-                d="M696.339444 267.408785a40.874639 40.874639 0 0 1-41.038795-41.038795 144.292401 144.292401 0 0 0-288.584803 0 41.038794 41.038794 0 0 1-82.077589 0 226.36999 226.36999 0 0 1 452.739981 0 41.038794 41.038794 0 0 1-41.038794 41.038795zM818.963362 932.237256a41.20295 41.20295 0 0 1-41.038795-41.20295L779.401964 311.894838a41.038794 41.038794 0 0 1 41.038794-41.038794 41.20295 41.20295 0 0 1 41.038795 41.038794l-1.477397 579.139468a41.038794 41.038794 0 0 1-41.038794 41.20295z"
-                fill="#2c2c2c"
-              ></path>
-              <path
-                d="M622.797924 734.101956a41.038794 41.038794 0 0 1-40.710484-41.367105l1.477396-187.793524a41.038794 41.038794 0 0 1 41.038795-40.710484 41.038794 41.038794 0 0 1 40.710484 41.367105l-1.477397 187.793524a41.038794 41.038794 0 0 1-41.038794 40.710484z"
-                fill="#2c2c2c"
-                opacity=".7"
-              ></path>
-              <path
-                d="M407.754641 734.101956a41.038794 41.038794 0 0 1-40.710484-41.367105l1.477396-187.793524a41.038794 41.038794 0 0 1 41.038795-40.710484 41.038794 41.038794 0 0 1 40.710484 41.367105l-1.477397 187.793524a41.038794 41.038794 0 0 1-41.038794 40.710484z"
-                fill="#2c2c2c"
-                opacity=".7"
-              ></path>
-              <path
-                d="M623.94701 1023.179224H400.039347A236.383456 236.383456 0 0 1 163.984202 786.959923L165.297443 311.894838a41.20295 41.20295 0 0 1 41.038795-41.038794 41.038794 41.038794 0 0 1 41.038794 41.038794l-1.313241 476.050016a154.141712 154.141712 0 0 0 153.977556 153.977557h223.907663a41.038794 41.038794 0 1 1 0 82.077589z"
-                fill="#2c2c2c"
-              ></path>
-            </svg>
-          </div>
+          <ContextMenuDelete />
           <div>删除</div>
         </div>
       </div>
@@ -517,8 +438,8 @@ export default function FilePage() {
   }, [targetPath])
 
   useEffect(() => {
-    if (currentItem && renameInput != undefined)
-      nameRef.current[currentIndex]?.focus()
+    if (currentItem && renameInput != undefined && nameRef.current[currentIndex])
+      nameRef.current[currentIndex].focus()
   }, [currentItem, renameInput])
 
   useEffect(() => {
@@ -549,8 +470,7 @@ export default function FilePage() {
               <span
                 className="cursor-pointer"
                 onClick={() => {
-                  '/' +
-                    setFolderPath(folderPath.split('/').slice(0, -1).join('/'))
+                  setFolderPath(folderPath.split('/').slice(0, -1).join('/'))
                 }}
               >
                 返回上一级
@@ -580,7 +500,7 @@ export default function FilePage() {
                                 : '',
                           }}
                           onClick={() => {
-                            folderPath.split('/').slice(-1)[0] != value &&
+                            if(folderPath.split('/').slice(-1)[0] != value) 
                               setFolderPath(
                                 '/' +
                                   folderPath
@@ -598,7 +518,7 @@ export default function FilePage() {
             </div>
           </div>
           <div className="grid-col-1 grid flex-1 grid-rows-[repeat(auto-fit,50px)] overflow-auto shadow-[0px_1px_5px_rgba(0,0,0,0.05)]">
-            {folders?.map((value, index) => {
+            {folders?.map((value) => {
               return (
                 <div
                   className="flex h-[50px] w-full items-center gap-[20px] px-8 text-sm hover:bg-[#FAFAFC]"
@@ -607,18 +527,7 @@ export default function FilePage() {
                   }}
                 >
                   <div>
-                    {
-                      <svg viewBox="0 0 1024 1024" width="35px" height="35px">
-                        <path
-                          d="M953.9 300.7c-27.2-42-657-19.8-716.3 34.6-59.3 54.4-103.7 511.3-81.5 528.6 22.2 17.3 708.9 17.3 731.1-17.3 22.3-34.6 93.9-503.9 66.7-545.9z"
-                          fill="#FFCE45"
-                        ></path>
-                        <path
-                          d="M573.8 252.4c-16.7-39.9-40-82.7-67-95-54.3-24.7-390.3 7.4-432.3 46.9-35 33 26.2 411.3 47.4 536 7.3-141.2 42.7-395 85.9-434.7 29.6-26.9 199.2-45.9 366-53.2z"
-                          fill="#FFCE45"
-                        ></path>
-                      </svg>
-                    }
+                    <TypesFolder width={35} height={35} />
                   </div>
                   <div>{value.name}</div>
                 </div>
@@ -670,9 +579,9 @@ export default function FilePage() {
         }}
       >
         <ContextMenu
-          item={currentItem}
+          item={currentItem as FType}
           mousePosition={mousePosition}
-          index={currentIndex}
+          // index={currentIndex}
         />
         <div className="hidden w-[18%] bg-[#f9fafb] p-6 md:block">
           <div className="flex h-full w-full flex-col items-center">
@@ -694,24 +603,12 @@ export default function FilePage() {
                 }}
                 className="flex h-1/2 w-[8%] cursor-pointer items-center justify-center"
               >
-                <svg viewBox="0 0 1024 1024" width="0.5rem" height="0.5rem">
-                  <path
-                    d="M918.208 424.96L207.04 13.824C139.456-25.088 55.488 23.552 55.488 101.376v821.76c0 77.824 83.968 125.952 151.04 87.04l711.68-410.624c67.072-38.912 67.072-136.192 0-174.592z"
-                    p-id="2313"
-                    fill="#707070"
-                  ></path>
-                </svg>
+               
+              <ExpandIconA />
               </div>
               <div className="hidden xl:block">我的文件</div>
               <div className="hidden md:max-xl:block">Files</div>
-              <div>
-                <svg viewBox="0 0 1024 1024" width="0.9rem" height="0.9rem">
-                  <path
-                    d="M512.123 0.43c59.12 0 108.38 49.265 108.38 108.385s-49.265 108.39-108.38 108.39c-59.12 0-108.396-49.274-108.396-108.39C403.732 49.695 453.007 0.43 512.123 0.43z m0 400.712c59.12 0 108.38 49.264 108.38 108.385 0 59.13-49.265 108.39-108.38 108.39-59.12 0-108.396-49.264-108.396-108.39s49.28-108.385 108.396-108.385z m0 400.711c59.12 0 108.38 49.275 108.38 108.386 0 59.13-49.265 108.395-108.38 108.395-59.12 0-108.396-49.27-108.396-108.395 0.005-59.11 49.28-108.386 108.396-108.386z m0 0"
-                    fill="#707070"
-                  ></path>
-                </svg>
-              </div>
+              <LeftBarSet />
             </div>
             <div
               style={{
@@ -767,12 +664,7 @@ export default function FilePage() {
                   </div>
                   <div>我的文件</div>
                   <div>
-                    <svg viewBox="0 0 1024 1024" width="0.9rem" height="0.9rem">
-                      <path
-                        d="M512.123 0.43c59.12 0 108.38 49.265 108.38 108.385s-49.265 108.39-108.38 108.39c-59.12 0-108.396-49.274-108.396-108.39C403.732 49.695 453.007 0.43 512.123 0.43z m0 400.712c59.12 0 108.38 49.264 108.38 108.385 0 59.13-49.265 108.39-108.38 108.39-59.12 0-108.396-49.264-108.396-108.39s49.28-108.385 108.396-108.385z m0 400.711c59.12 0 108.38 49.275 108.38 108.386 0 59.13-49.265 108.395-108.38 108.395-59.12 0-108.396-49.27-108.396-108.395 0.005-59.11 49.28-108.386 108.396-108.386z m0 0"
-                        fill="#707070"
-                      ></path>
-                    </svg>
+                    <LeftBarSet />
                   </div>
                 </div>
                 <div
@@ -857,7 +749,6 @@ export default function FilePage() {
                   <span
                     className="cursor-pointer"
                     onClick={() => {
-                      '/' +
                         setTargetPath(
                           targetPath.split('/').slice(0, -1).join('/')
                         )
@@ -890,7 +781,7 @@ export default function FilePage() {
                                     : '',
                               }}
                               onClick={() => {
-                                targetPath.split('/').slice(-1)[0] != value &&
+                                if(targetPath.split('/').slice(-1)[0] != value)
                                   setTargetPath(
                                     '/' +
                                       targetPath
@@ -911,7 +802,7 @@ export default function FilePage() {
                 className="grid w-full flex-1 grid-cols-[repeat(auto-fit,140px)] grid-rows-[repeat(auto-fit,170px)] overflow-auto"
                 style={{
                   display:
-                    !loading && filesAndFolders.length ? 'grid' : 'block',
+                    filesAndFolders.length ? 'grid' : 'block',
                 }}
               >
                 {filesAndFolders.map((item, index) => {
@@ -929,6 +820,7 @@ export default function FilePage() {
                           setCurrentItem(item)
                           setCurrentIndex(index)
                           setShowMenu(false)
+                          setRenameInput(undefined)
                         }}
                         onDoubleClick={() => {
                           if (item.size != null) return
@@ -980,7 +872,7 @@ export default function FilePage() {
                                 height: '24px',
                                 display:
                                   currentItem == item &&
-                                  renameInput != undefined
+                                  renameInput !== undefined
                                     ? ''
                                     : 'none',
                               }}
@@ -1049,7 +941,7 @@ export default function FilePage() {
                   className="h-full w-full items-center justify-center"
                   style={{
                     display:
-                      filesAndFolders.length || loading ? 'none' : 'flex',
+                      filesAndFolders.length ? 'none' : 'flex',
                   }}
                 >
                   <img
