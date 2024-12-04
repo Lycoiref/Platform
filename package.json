@@ -20,7 +20,8 @@
     "next": "14.2.15",
     "react": "^18",
     "react-dom": "^18",
-    "react-typing-effect": "~2.0.5"
+    "react-typing-effect": "~2.0.5",
+    "sharp": "^0.33.5"
   },
   "devDependencies": {
     "@types/markdown-it": "~14.1.2",
