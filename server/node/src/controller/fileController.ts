@@ -76,7 +76,7 @@ export const uploadFileOrFolder = async (ctx: Context) => {
       return
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const file: any = files.file 
+    const file: any = files.file
     const dirPath = path.join(
       path.dirname(file.filepath),
       file.originalFilename.split('.')[0]

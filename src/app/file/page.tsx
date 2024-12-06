@@ -1,6 +1,8 @@
 'use client'
-import { useLayoutEffect, useEffect, useRef, useState} from 'react'
+import React, { useLayoutEffect, useEffect, useRef, useState } from 'react'
 import { Input } from '@douyinfe/semi-ui'
+import { observer } from 'mobx-react'
+import { filesAndFolders, currentItem } from '@/store/fileStore'
 import {
   ContextMenuCopy,
   ContextMenuCut,
@@ -36,7 +38,14 @@ interface FType {
   lastModefined: Date
 }
 
-type TypeOfFile = '.md' | '.pdf' | '.xlsx' | '.folder' | '.mp4' | '.mp3' | '.doc'
+type TypeOfFile =
+  | '.md'
+  | '.pdf'
+  | '.xlsx'
+  | '.folder'
+  | '.mp4'
+  | '.mp3'
+  | '.doc'
 
 export default function FilePage() {
   const categorise = [
@@ -78,20 +87,16 @@ export default function FilePage() {
   }
 
   const uploadRef = useRef<HTMLInputElement>(null)
-  const nameRef = useRef<(HTMLInputElement | null)[]>([])
   const [expandCategories, setExpandCategories] = useState(true)
-  const [filesAndFolders, setFilesAndFolders] = useState<FType[]>([])
   const [folders, setFolders] = useState<FType[]>([])
   const [targetPath, setTargetPath] = useState('')
   const [folderPath, setFolderPath] = useState('')
   const [showMenu, setShowMenu] = useState(false)
   const [moveFile, setMoveFile] = useState(false)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
-  const [currentItem, setCurrentItem] = useState<FType | null>()
   const [cutItem, setCutItem] = useState<FType | null>()
   const [copyItem, setCopyItem] = useState<FType | null>()
   const [renameInput, setRenameInput] = useState<string | undefined>(undefined)
-  const [currentIndex, setCurrentIndex] = useState(-1)
   const [showLeftBar, setShowLeftBar] = useState(false)
 
   const getIcon = (f: FType) => {
@@ -126,9 +131,9 @@ export default function FilePage() {
           lastModefined: new Date(file.lastModefined),
         })
       }
-      setFilesAndFolders(temp)
+      filesAndFolders.reset([...temp])
     } catch (error) {
-      console.log('文件读取错误 ):',error)
+      console.log('文件读取错误 ):', error)
       setTargetPath('')
       return
     }
@@ -169,19 +174,6 @@ export default function FilePage() {
     filesReader()
   }
 
-  const createFolder = () => {
-    setFilesAndFolders([{
-      name: '',
-      path: targetPath,
-      size: null,
-      lastModefined: new Date(),
-    },...filesAndFolders])
-    console.log(filesAndFolders)
-    setCurrentItem(filesAndFolders[0])
-    setCurrentIndex(0)
-    setRenameInput('')
-  }
-
   const createAction = async (name: string | undefined) => {
     if (!name) {
       filesReader()
@@ -212,10 +204,10 @@ export default function FilePage() {
 
   const cutFileOrFolder = async (cutF: FType) => {
     const temp = []
-    for (const f of filesAndFolders) {
+    for (const f of filesAndFolders.files) {
       if (cutF != f) temp.push(f)
     }
-    setFilesAndFolders(temp)
+    filesAndFolders.reset(temp)
   }
 
   const pasteFileOrFolder = async (
@@ -263,7 +255,7 @@ export default function FilePage() {
     url += `?pathQuery=${encodeURIComponent(targetPath)}`
 
     for (const file of files) {
-      const chunkSize = 1024 * 1024 *5
+      const chunkSize = 1024 * 1024 * 5
       let index = 0
       const [fname, fext] = file.name.split('.')
       const promises: Promise<Response>[] = []
@@ -275,7 +267,7 @@ export default function FilePage() {
         index++
         const res = fetch(url, {
           method: 'POST',
-          body: formData
+          body: formData,
         })
         promises.push(res)
       }
@@ -288,7 +280,7 @@ export default function FilePage() {
           )
         })
         .catch((error) => {
-          console.log('传送出错啦！本次传输暂停！！',error)
+          console.log('传送出错啦！本次传输暂停！！', error)
           return
         })
       filesReader()
@@ -305,18 +297,23 @@ export default function FilePage() {
   }
 
   const onContextMenu = (e: React.MouseEvent, item: FType, index: number) => {
+    currentItem.reset(item, index)
     e.preventDefault()
     const x = e.clientX
     const y = e.clientY
     setMousePosition({ x, y })
     setShowMenu(true)
-    setCurrentItem(item) 
-    setCurrentIndex(index)
     // 全局状态管理 state zustand mobx
     // 最好别用 redux
   }
 
-  const ContextMenu = ({ item, mousePosition }: {item:FType , mousePosition:{x:number,y:number}}) => {
+  const ContextMenu = ({
+    item,
+    mousePosition,
+  }: {
+    item: FType
+    mousePosition: { x: number; y: number }
+  }) => {
     return (
       <div
         style={{
@@ -429,6 +426,161 @@ export default function FilePage() {
     )
   }
 
+  const FilesRender = observer(() => {
+    useEffect(() => {
+      if (filesAndFolders.refs[currentItem.index])
+        setTimeout(() => {
+          filesAndFolders.refs[currentItem.index]?.current?.focus()
+        }, 0)
+    }, [renameInput, filesAndFolders.refs])
+    return (
+      <>
+        <div
+          className="grid w-full flex-1 grid-cols-[repeat(auto-fit,140px)] grid-rows-[repeat(auto-fit,170px)] overflow-auto"
+          style={{
+            display: filesAndFolders.files.length ? 'grid' : 'block',
+          }}
+        >
+          {filesAndFolders.files.map((item, index) => {
+            return (
+              <div className="flex h-[150px] w-[140px] flex-col items-center justify-center pb-[20px] pl-[30px]">
+                <div
+                  className="flex h-full w-full flex-col items-center rounded-lg px-3 hover:bg-[#f4f4f5]"
+                  onContextMenu={(e) => {
+                    setRenameInput(undefined)
+                    onContextMenu(e, item, index)
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    currentItem.reset(item, index)
+                    setShowMenu(false)
+                    setRenameInput(undefined)
+                  }}
+                  onDoubleClick={() => {
+                    if (item.size != null) return
+                    setTargetPath(`${targetPath}/${item.name}`)
+                  }}
+                  onCut={() => {
+                    setCutItem(item)
+                    cutFileOrFolder(item)
+                    setShowMenu(false)
+                  }}
+                  onPaste={() => {
+                    if (cutItem != null) {
+                      pasteFileOrFolder(
+                        cutItem.path,
+                        targetPath + '/' + item.name + '/' + cutItem.name,
+                        1
+                      )
+                      setCutItem(null)
+                    } else if (copyItem != null) {
+                      pasteFileOrFolder(
+                        copyItem.path,
+                        targetPath + '/' + item.name + '/' + copyItem.name,
+                        0
+                      )
+                    }
+                  }}
+                  style={{
+                    backgroundColor: item === currentItem.item ? '#F2FAFF' : '',
+                  }}
+                >
+                  <div className="h-[20px]"></div>
+                  <div className="flex h-[50px] items-center justify-center">
+                    {getIcon(item)}
+                  </div>
+                  <div className="h-[10px]"></div>
+                  <div className="flex h-[50px] flex-col items-center gap-[5px]">
+                    <div className="w-full text-center text-xs">
+                      <Input
+                        ref={filesAndFolders.refs[index]}
+                        size="small"
+                        value={renameInput}
+                        style={{
+                          height: '24px',
+                          display:
+                            currentItem.item === item &&
+                            renameInput !== undefined
+                              ? ''
+                              : 'none',
+                        }}
+                        onChange={(value) => setRenameInput(value)}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                        }}
+                        onEnterPress={() => {
+                          if (item.name == '') createAction(renameInput)
+                          else if (renameInput)
+                            renameFileOrFolder(item, renameInput)
+                          setRenameInput(undefined)
+                        }}
+                      ></Input>
+                      <div
+                        style={{
+                          display:
+                            currentItem.item == item &&
+                            renameInput !== undefined
+                              ? 'none'
+                              : '',
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: item.size != null ? 'block' : 'none',
+                          }}
+                        >
+                          {item.name
+                            .split('.')
+                            .slice(0, -1)
+                            .reduce((sum, part) => sum + part.length, 0) >= 12
+                            ? item.name.slice(0, 12) + '...'
+                            : item.name}
+                        </div>
+                        <div
+                          style={{
+                            display: item.size == null ? 'block' : 'none',
+                          }}
+                        >
+                          {item.size == null && item.name.length >= 15
+                            ? item.name.slice(0, 12) + '...'
+                            : item.name}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="w-full text-center text-xs text-[#737373]">
+                      {`${item.lastModefined.getMonth() + 1}-${
+                        item.lastModefined.getDate() + 1
+                      } ${
+                        item.lastModefined.getHours() > 10 ? '' : 0
+                      }${item.lastModefined.getHours()}:${
+                        item.lastModefined.getMinutes() > 10 ? '' : 0
+                      }${item.lastModefined.getMinutes()}`}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+          <div
+            className="h-full w-full items-center justify-center"
+            style={{
+              display: filesAndFolders.files.length ? 'none' : 'flex',
+            }}
+          >
+            <img
+              src="/no_Files.png"
+              alt="nth"
+              style={{
+                height: '60%',
+                width: '50%',
+              }}
+            ></img>
+          </div>
+        </div>
+      </>
+    )
+  })
+
   useLayoutEffect(() => {
     filesReader()
   }, [])
@@ -436,11 +588,6 @@ export default function FilePage() {
   useEffect(() => {
     filesReader()
   }, [targetPath])
-
-  useEffect(() => {
-    if (currentItem && renameInput != undefined && nameRef.current[currentIndex])
-      nameRef.current[currentIndex].focus()
-  }, [currentItem, renameInput])
 
   useEffect(() => {
     folderReader(folderPath)
@@ -500,7 +647,7 @@ export default function FilePage() {
                                 : '',
                           }}
                           onClick={() => {
-                            if(folderPath.split('/').slice(-1)[0] != value) 
+                            if (folderPath.split('/').slice(-1)[0] != value)
                               setFolderPath(
                                 '/' +
                                   folderPath
@@ -549,8 +696,8 @@ export default function FilePage() {
               className="flex h-[35px] w-[120px] cursor-pointer items-center justify-center rounded-full bg-[#64748B] font-semibold text-white"
               onClick={() => {
                 pasteFileOrFolder(
-                  currentItem?.path as string,
-                  `${folderPath}/${currentItem?.name}`,
+                  currentItem.item?.path as string,
+                  `${folderPath}/${currentItem.item?.name}`,
                   1
                 )
                 setMoveFile(false)
@@ -569,19 +716,17 @@ export default function FilePage() {
           if (showMenu) {
             setShowMenu(false)
           }
-          if (renameInput != undefined) {
+          if (renameInput !== undefined) {
             setRenameInput(undefined)
           }
-          if (currentItem) {
-            setCurrentIndex(-1)
-            setCurrentItem(null)
+          if (currentItem.item) {
+            currentItem.reset(null, -1)
           }
         }}
       >
         <ContextMenu
-          item={currentItem as FType}
+          item={currentItem.item as FType}
           mousePosition={mousePosition}
-          // index={currentIndex}
         />
         <div className="hidden w-[18%] bg-[#f9fafb] p-6 md:block">
           <div className="flex h-full w-full flex-col items-center">
@@ -603,8 +748,7 @@ export default function FilePage() {
                 }}
                 className="flex h-1/2 w-[8%] cursor-pointer items-center justify-center"
               >
-               
-              <ExpandIconA />
+                <ExpandIconA />
               </div>
               <div className="hidden xl:block">我的文件</div>
               <div className="hidden md:max-xl:block">Files</div>
@@ -733,7 +877,17 @@ export default function FilePage() {
                 </div>
                 <div
                   className="flex h-[2rem] w-[20%] min-w-[6rem] cursor-pointer items-center justify-center rounded-full bg-[#e2e8f0] text-[#64748b]"
-                  onClick={() => createFolder()}
+                  onClick={() => {
+                    const newFolder: FType = {
+                      name: '',
+                      path: targetPath,
+                      size: null,
+                      lastModefined: new Date(),
+                    }
+                    filesAndFolders.reset([newFolder, ...filesAndFolders.files])
+                    currentItem.reset(newFolder, 0)
+                    setRenameInput('')
+                  }}
                 >
                   新建文件夹
                 </div>
@@ -749,9 +903,9 @@ export default function FilePage() {
                   <span
                     className="cursor-pointer"
                     onClick={() => {
-                        setTargetPath(
-                          targetPath.split('/').slice(0, -1).join('/')
-                        )
+                      setTargetPath(
+                        targetPath.split('/').slice(0, -1).join('/')
+                      )
                     }}
                   >
                     返回上一级
@@ -781,7 +935,7 @@ export default function FilePage() {
                                     : '',
                               }}
                               onClick={() => {
-                                if(targetPath.split('/').slice(-1)[0] != value)
+                                if (targetPath.split('/').slice(-1)[0] != value)
                                   setTargetPath(
                                     '/' +
                                       targetPath
@@ -798,162 +952,7 @@ export default function FilePage() {
                       })}
                 </div>
               </div>
-              <div
-                className="grid w-full flex-1 grid-cols-[repeat(auto-fit,140px)] grid-rows-[repeat(auto-fit,170px)] overflow-auto"
-                style={{
-                  display:
-                    filesAndFolders.length ? 'grid' : 'block',
-                }}
-              >
-                {filesAndFolders.map((item, index) => {
-                  return (
-                    <div className="flex h-[150px] w-[140px] flex-col items-center justify-center pb-[20px] pl-[30px]">
-                      <div
-                        key={index}
-                        className="flex h-full w-full flex-col items-center rounded-lg px-2 hover:bg-[#f4f4f5]"
-                        onContextMenu={(e) => {
-                          setRenameInput(undefined)
-                          onContextMenu(e, item, index)
-                        }}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setCurrentItem(item)
-                          setCurrentIndex(index)
-                          setShowMenu(false)
-                          setRenameInput(undefined)
-                        }}
-                        onDoubleClick={() => {
-                          if (item.size != null) return
-                          setTargetPath(`${targetPath}/${item.name}`)
-                        }}
-                        onCut={() => {
-                          setCutItem(item)
-                          cutFileOrFolder(item)
-                          setShowMenu(false)
-                        }}
-                        onPaste={() => {
-                          if (cutItem != null) {
-                            pasteFileOrFolder(
-                              cutItem.path,
-                              targetPath + '/' + item.name + '/' + cutItem.name,
-                              1
-                            )
-                            setCutItem(null)
-                          } else if (copyItem != null) {
-                            pasteFileOrFolder(
-                              copyItem.path,
-                              targetPath +
-                                '/' +
-                                item.name +
-                                '/' +
-                                copyItem.name,
-                              0
-                            )
-                          }
-                        }}
-                        style={{
-                          backgroundColor: item == currentItem ? '#F2FAFF' : '',
-                        }}
-                      >
-                        <div className="h-[20px]"></div>
-                        <div className="h-[50px]">{getIcon(item)}</div>
-                        <div className="h-[10px]"></div>
-                        <div className="flex h-[50px] flex-col items-center gap-[5px]">
-                          <div className="w-full text-center text-xs">
-                            <Input
-                              key={index}
-                              ref={(e) => {
-                                nameRef.current[index] = e
-                              }}
-                              size="small"
-                              defaultValue={item.name}
-                              value={renameInput}
-                              style={{
-                                height: '24px',
-                                display:
-                                  currentItem == item &&
-                                  renameInput !== undefined
-                                    ? ''
-                                    : 'none',
-                              }}
-                              onChange={(value) => setRenameInput(value)}
-                              onClick={(e) => {
-                                e.stopPropagation()
-                              }}
-                              onEnterPress={() => {
-                                if (item.name == '') createAction(renameInput)
-                                else if (renameInput)
-                                  renameFileOrFolder(item, renameInput)
-                                setRenameInput(undefined)
-                              }}
-                            ></Input>
-                            <div
-                              style={{
-                                display:
-                                  currentItem == item &&
-                                  renameInput != undefined
-                                    ? 'none'
-                                    : '',
-                              }}
-                            >
-                              <div
-                                style={{
-                                  display: item.size != null ? 'block' : 'none',
-                                }}
-                              >
-                                {item.name
-                                  .split('.')
-                                  .slice(0, -1)
-                                  .reduce(
-                                    (sum, part) => sum + part.length,
-                                    0
-                                  ) >= 12
-                                  ? item.name.slice(0, 12) + '...'
-                                  : item.name}
-                              </div>
-                              <div
-                                style={{
-                                  display: item.size == null ? 'block' : 'none',
-                                }}
-                              >
-                                {item.size == null && item.name.length >= 15
-                                  ? item.name.slice(0, 12) + '...'
-                                  : item.name}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="w-full text-center text-xs text-[#737373]">
-                            {`${item.lastModefined.getMonth() + 1}-${
-                              item.lastModefined.getDate() + 1
-                            } ${
-                              item.lastModefined.getHours() > 10 ? '' : 0
-                            }${item.lastModefined.getHours()}:${
-                              item.lastModefined.getMinutes() > 10 ? '' : 0
-                            }${item.lastModefined.getMinutes()}`}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )
-                })}
-
-                <div
-                  className="h-full w-full items-center justify-center"
-                  style={{
-                    display:
-                      filesAndFolders.length ? 'none' : 'flex',
-                  }}
-                >
-                  <img
-                    src="/no_Files.png"
-                    alt="nth"
-                    style={{
-                      height: '60%',
-                      width: '50%',
-                    }}
-                  ></img>
-                </div>
-              </div>
+              <FilesRender />
             </div>
             <div className="hidden h-full w-[3%] min-w-8 md:block"></div>
             <div className="hidden h-full w-[26%] flex-col md:flex">
