@@ -2,7 +2,7 @@
 import React, { useLayoutEffect, useEffect, useRef, useState } from 'react'
 import { Input } from '@douyinfe/semi-ui'
 import { observer } from 'mobx-react'
-import { filesAndFolders, currentItem } from '@/store/fileStore'
+import { filesAndFolders, currentItem, FType } from '@/store/fileStore'
 import {
   ContextMenuCopy,
   ContextMenuCut,
@@ -30,13 +30,6 @@ import {
   UserIcon,
   UploadIcon,
 } from '@/components/static/'
-
-interface FType {
-  name: string
-  size: number | null
-  path: string
-  lastModefined: Date
-}
 
 type TypeOfFile =
   | '.md'
@@ -120,6 +113,7 @@ export default function FilePage() {
           path: folder.folderPath.replace(/\\/g, '/'),
           name: folder.folderName,
           size: null,
+          isBeingRenamed: false,
           lastModefined: new Date(folder.lastModefined),
         })
       }
@@ -128,6 +122,7 @@ export default function FilePage() {
           name: file.fileName,
           path: file.filePath.replace(/\\/g, '/'),
           size: file.fileSize,
+          isBeingRenamed: false,
           lastModefined: new Date(file.lastModefined),
         })
       }
@@ -152,6 +147,7 @@ export default function FilePage() {
         path: folder.folderPath,
         name: folder.folderName,
         size: null,
+        isBeingRenamed: false,
         lastModefined: new Date(folder.lastModefined),
       })
     }
@@ -428,11 +424,13 @@ export default function FilePage() {
 
   const FilesRender = observer(() => {
     useEffect(() => {
+      console.log('ref')
       if (filesAndFolders.refs[currentItem.index])
         setTimeout(() => {
           filesAndFolders.refs[currentItem.index]?.current?.focus()
         }, 0)
     }, [renameInput, filesAndFolders.refs])
+
     return (
       <>
         <div
@@ -492,60 +490,54 @@ export default function FilePage() {
                   <div className="h-[10px]"></div>
                   <div className="flex h-[50px] flex-col items-center gap-[5px]">
                     <div className="w-full text-center text-xs">
-                      <Input
-                        ref={filesAndFolders.refs[index]}
-                        size="small"
-                        value={renameInput}
-                        style={{
-                          height: '24px',
-                          display:
-                            currentItem.item === item &&
-                            renameInput !== undefined
-                              ? ''
-                              : 'none',
-                        }}
-                        onChange={(value) => setRenameInput(value)}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                        }}
-                        onEnterPress={() => {
-                          if (item.name == '') createAction(renameInput)
-                          else if (renameInput)
-                            renameFileOrFolder(item, renameInput)
-                          setRenameInput(undefined)
-                        }}
-                      ></Input>
-                      <div
-                        style={{
-                          display:
-                            currentItem.item == item &&
-                            renameInput !== undefined
-                              ? 'none'
-                              : '',
-                        }}
-                      >
-                        <div
-                          style={{
-                            display: item.size != null ? 'block' : 'none',
+                      {item.isBeingRenamed ? (
+                        <Input
+                          autoFocus={true}
+                          onBlur={() => {
+                            item.isBeingRenamed = false
                           }}
-                        >
-                          {item.name
-                            .split('.')
-                            .slice(0, -1)
-                            .reduce((sum, part) => sum + part.length, 0) >= 12
-                            ? item.name.slice(0, 12) + '...'
-                            : item.name}
-                        </div>
-                        <div
+                          ref={filesAndFolders.refs[index]}
+                          size="small"
+                          value={renameInput}
                           style={{
-                            display: item.size == null ? 'block' : 'none',
+                            height: '24px',
                           }}
-                        >
-                          {item.size == null && item.name.length >= 15
-                            ? item.name.slice(0, 12) + '...'
-                            : item.name}
+                          onChange={(value) => setRenameInput(value)}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                          }}
+                          onEnterPress={() => {
+                            if (item.name == '') createAction(renameInput)
+                            else if (renameInput)
+                              renameFileOrFolder(item, renameInput)
+                            setRenameInput(undefined)
+                          }}
+                        ></Input>
+                      ) : (
+                        <div>
+                          <div
+                            style={{
+                              display: item.size != null ? 'block' : 'none',
+                            }}
+                          >
+                            {item.name
+                              .split('.')
+                              .slice(0, -1)
+                              .reduce((sum, part) => sum + part.length, 0) >= 12
+                              ? item.name.slice(0, 12) + '...'
+                              : item.name}
+                          </div>
+                          <div
+                            style={{
+                              display: item.size == null ? 'block' : 'none',
+                            }}
+                          >
+                            {item.size == null && item.name.length >= 15
+                              ? item.name.slice(0, 12) + '...'
+                              : item.name}
+                          </div>
                         </div>
-                      </div>
+                      )}
                     </div>
                     <div className="w-full text-center text-xs text-[#737373]">
                       {`${item.lastModefined.getMonth() + 1}-${
@@ -882,6 +874,7 @@ export default function FilePage() {
                       name: '',
                       path: targetPath,
                       size: null,
+                      isBeingRenamed: true,
                       lastModefined: new Date(),
                     }
                     filesAndFolders.reset([newFolder, ...filesAndFolders.files])

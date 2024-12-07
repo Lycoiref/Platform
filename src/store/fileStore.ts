@@ -1,10 +1,11 @@
 import { makeAutoObservable } from 'mobx'
 import React from 'react'
 
-interface FType {
+export interface FType {
   name: string
   size: number | null
   path: string
+  isBeingRenamed: boolean
   lastModefined: Date
 }
 
