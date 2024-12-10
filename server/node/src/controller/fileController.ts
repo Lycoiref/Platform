@@ -1,5 +1,5 @@
 import { Context } from 'koa'
-import path from 'path'
+import path, { dirname } from 'path'
 import fs, { copyFileSync } from 'fs'
 import archiver from 'archiver'
 
@@ -15,6 +15,12 @@ function copyFolder(oldFolderPath: string, newFolderPath: string) {
 }
 
 export const filesReader = async (ctx: Context) => {
+  if (!fs.existsSync(path.join(__dirname, '../../files'))) {
+    fs.mkdirSync(path.join(__dirname, '../../files'))
+    fs.mkdirSync(
+      path.join(__dirname, '../../files', 'HelloWorldOfficialUploadFolder')
+    )
+  }
   const { pathQuery } = ctx.query
   let dirPath
   if (pathQuery)
@@ -27,7 +33,7 @@ export const filesReader = async (ctx: Context) => {
 
     if (filesAndFolders) {
       for (const f of filesAndFolders) {
-        if (f == 'upload') continue
+        if (f == 'HelloWorldOfficialUploadFolder') continue
         const fPath = path.join(dirPath, f)
         const fState = fs.statSync(fPath)
         if (fState.isFile()) {
@@ -35,13 +41,13 @@ export const filesReader = async (ctx: Context) => {
             fileName: f,
             filePath: path.join(pathQuery as string, '/', f),
             fileSize: fState.size,
-            lastModefined: fState.mtime,
+            lastModified: fState.mtime,
           })
         } else if (fState.isDirectory()) {
           folderContents.push({
             folderName: f,
             folderPath: path.join(pathQuery as string, '/', f),
-            lastModefined: fState.mtime,
+            lastModified: fState.mtime,
           })
         }
       }
@@ -76,7 +82,7 @@ export const uploadFileOrFolder = async (ctx: Context) => {
       return
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const file: any = files.file 
+    const file: any = files.file
     const dirPath = path.join(
       path.dirname(file.filepath),
       file.originalFilename.split('.')[0]
@@ -123,18 +129,18 @@ export const deleteFileOrFolder = async (ctx: Context) => {
 }
 
 export const renameFileOrFolder = async (ctx: Context) => {
-  const { fpath, originalName, newName } = ctx.query
+  const { fPath, originalName, newName } = ctx.query
   const oldPath = path.join(
     __dirname,
     '../../files',
-    fpath !== '0' ? (fpath as string) : '',
+    fPath !== '0' ? (fPath as string) : '',
     '/',
     originalName as string
   )
   const newPath = path.join(
     __dirname,
     '../../files',
-    fpath !== '0' ? (fpath as string) : '',
+    fPath !== '0' ? (fPath as string) : '',
     '/',
     newName as string
   )
@@ -155,7 +161,7 @@ export const createFolder = async (ctx: Context) => {
     folderName as string
   )
   fs.mkdirSync(dirPath)
-  fs.mkdirSync(path.join(dirPath, 'upload'))
+  fs.mkdirSync(path.join(dirPath, 'HelloWorldOfficialUploadFolder'))
   ctx.state = 200
   ctx.body = {
     message: '新建文件夹成功 (:',
@@ -196,7 +202,10 @@ export const fileOrFolderDownloader = async (ctx: Context) => {
     const archive = archiver('zip', {
       zlib: { level: 9 },
     })
-    archive.directory(dirPath, path.basename(dirPath))
+    archive.glob('**', {
+      cwd: dirPath,
+      ignore: ['**/HelloWorldOfficialUploadFolder/**'],
+    })
     archive.pipe(output)
     archive.on('error', (err) => {
       console.error('归档过程中发生错误：', err)
@@ -215,7 +224,7 @@ export const mergeUploadedChunk = async (ctx: Context) => {
     __dirname,
     '../../files',
     pathQuery as string,
-    'upload',
+    'HelloWorldOfficialUploadFolder',
     (name as string).split('.')[0]
   )
   let targetPath = path.join(

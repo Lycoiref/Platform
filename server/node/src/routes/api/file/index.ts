@@ -24,7 +24,7 @@ const dynamicKoaBody = (ctx: Context, next: Next) => {
     __dirname,
     '../../../../files',
     pathQuery as string,
-    'upload'
+    'HelloWorldOfficialUploadFolder'
   )
   return koaBody({
     multipart: true,
