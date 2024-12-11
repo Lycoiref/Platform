@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { observer } from 'mobx-react'
-import { Input } from '@douyinfe/semi-ui'
+import { Input, Notification } from '@douyinfe/semi-ui'
 import {
   filesAndFolders,
   currentItem,
@@ -49,8 +49,7 @@ const getIcon = (f: FType) => {
   } else return typesIcon['.folder']
 }
 
-const onContextMenu = (e: React.MouseEvent, item: FType, index: number) => {
-  currentItem.reset(item, index)
+const onContextMenu = (e: React.MouseEvent) => {
   e.preventDefault()
   const x = e.clientX
   const y = e.clientY
@@ -165,12 +164,14 @@ const FilesRender = observer(() => {
       >
         {filesAndFolders.files.map((item, index) => {
           return (
-            <div className="flex h-[150px] w-[140px] flex-col items-center justify-center pb-[20px] pl-[30px]">
+            <div className="flex h-[170px] w-[140px] flex-col items-center justify-center pb-[20px] pl-[30px]">
               <div
                 className="flex h-full w-full flex-col items-center rounded-lg px-3 hover:bg-[#f4f4f5]"
                 onContextMenu={(e) => {
                   basicStates.setRenameInput(undefined)
-                  onContextMenu(e, item, index)
+                  currentItem.reset(item, index)
+
+                  onContextMenu(e)
                 }}
                 onClick={(e) => {
                   e.stopPropagation()
@@ -179,10 +180,13 @@ const FilesRender = observer(() => {
                   basicStates.setRenameInput(undefined)
                 }}
                 onDoubleClick={() => {
-                  if (item.size != null) return
-                  filesAndFolders.setTotalPath(
-                    `${filesAndFolders.totalPath}/${item.name}`
-                  )
+                  if (item.size === null)
+                    filesAndFolders.setTotalPath(
+                      `${filesAndFolders.totalPath}/${item.name}`
+                    )
+                  else {
+                    basicStates.setRenderFile(true)
+                  }
                 }}
                 onCut={() => {
                   basicStates.setCutItem(item)
@@ -241,10 +245,24 @@ const FilesRender = observer(() => {
                           e.stopPropagation()
                         }}
                         onEnterPress={() => {
-                          if (item.name == '')
-                            createAction(basicStates.renameInput)
-                          else if (basicStates.renameInput)
-                            renameFileOrFolder(item, basicStates.renameInput)
+                          if (basicStates.renameInput) {
+                            if (item.name == '') {
+                              createAction(basicStates.renameInput)
+                            } else {
+                              renameFileOrFolder(item, basicStates.renameInput)
+                            }
+                          } else {
+                            Notification.error({
+                              title:
+                                item.size !== null
+                                  ? '文件名字不能为空！'
+                                  : '文件夹名字不能为空！',
+                              content: 'Sorry but failed.',
+                              duration: 2,
+                              position: 'top',
+                            })
+                            filesReader()
+                          }
                           basicStates.setRenameInput(undefined)
                         }}
                       ></Input>
@@ -278,9 +296,9 @@ const FilesRender = observer(() => {
                     {`${item.lastModified.getMonth() + 1}-${
                       item.lastModified.getDate() + 1
                     } ${
-                      item.lastModified.getHours() > 10 ? '' : 0
+                      item.lastModified.getHours() >= 10 ? '' : 0
                     }${item.lastModified.getHours()}:${
-                      item.lastModified.getMinutes() > 10 ? '' : 0
+                      item.lastModified.getMinutes() >= 10 ? '' : 0
                     }${item.lastModified.getMinutes()}`}
                   </div>
                 </div>

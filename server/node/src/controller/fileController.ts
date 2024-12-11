@@ -1,5 +1,5 @@
 import { Context } from 'koa'
-import path, { dirname } from 'path'
+import path from 'path'
 import fs, { copyFileSync } from 'fs'
 import archiver from 'archiver'
 
@@ -255,5 +255,12 @@ export const mergeUploadedChunk = async (ctx: Context) => {
   ctx.body = {
     message: '(:',
   }
+  ctx.status = 200
+}
+
+export const filePreview = async (ctx: Context) => {
+  const { filePath } = ctx.query
+  const dirPath = path.join(__dirname, '../../files', filePath as string)
+  ctx.body = fs.createReadStream(dirPath)
   ctx.status = 200
 }

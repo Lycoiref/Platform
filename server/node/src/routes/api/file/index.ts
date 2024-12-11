@@ -12,6 +12,7 @@ import {
   pasteFileOrFolder,
   fileOrFolderDownloader,
   mergeUploadedChunk,
+  filePreview,
 } from '../../../controller/fileController'
 
 type Next = () => Promise<void>
@@ -51,5 +52,7 @@ router.get('/paste', pasteFileOrFolder)
 router.get('/downloadOne', fileOrFolderDownloader)
 
 router.get('/merge', mergeUploadedChunk)
+
+router.get('/preview', filePreview)
 
 export default router

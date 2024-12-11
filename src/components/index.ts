@@ -10,6 +10,9 @@ export { FileContextMenu }
 import FileMoveModal from './FileMoveModal'
 export { FileMoveModal }
 
+import FileOnlinePreview from './FileOnlinePreview'
+export { FileOnlinePreview }
+
 import CoursesTable from './CoursesTable'
 export { CoursesTable }
 
