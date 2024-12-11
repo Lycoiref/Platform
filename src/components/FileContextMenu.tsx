@@ -62,11 +62,16 @@ const FileContextMenu = observer(() => {
     >
       <div
         className="flex flex-1 cursor-pointer items-center gap-[12px] px-5 hover:bg-[#f4f4f5]"
-        onClick={() => {
-          if (item.size != null) return
-          filesAndFolders.setTotalPath(
-            `${filesAndFolders.totalPath}/${item.name}`
-          )
+        onClick={(e) => {
+          if (item.size === null)
+            filesAndFolders.setTotalPath(
+              `${filesAndFolders.totalPath}/${item.name}`
+            )
+          else {
+            e.stopPropagation()
+            basicStates.setShowMenu(false)
+            basicStates.setRenderFile(true)
+          }
         }}
       >
         打开

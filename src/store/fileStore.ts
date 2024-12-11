@@ -42,6 +42,7 @@ class FilesAndFolders {
 class CurrentItem {
   item: FType | null = null
   index: number = -1
+  resourceLink: string | null = null
   constructor() {
     makeAutoObservable(this)
   }
@@ -49,13 +50,29 @@ class CurrentItem {
     this.item = tempItem
     this.index = tempIndex
   }
+  async fetchResource() {
+    try {
+      const url =
+        'http://localhost:6677/api/file/preview' +
+        `?filePath=${encodeURIComponent((this.item as FType).path)}`
+      const res = await fetch(url, { method: 'GET' })
+      const blob = await res.blob()
+      this.resourceLink = URL.createObjectURL(blob)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  clearResource() {
+    this.resourceLink = null
+  }
 }
 
 class BasicStates {
   renameInput: string | undefined = undefined
-  mousePosition: { x: number; y: number } = { x: 2, y: 0 }
+  mousePosition: { x: number; y: number } = { x: 0, y: 0 }
   showMenu: boolean = false
   moveFile: boolean = false
+  renderFile: boolean = false
   cutItem: FType | null = null
   copyItem: FType | null = null
   constructor() {
@@ -72,6 +89,9 @@ class BasicStates {
   }
   setMoveFile(isMove: boolean) {
     this.moveFile = isMove
+  }
+  setRenderFile(isRender: boolean) {
+    this.renderFile = isRender
   }
   setCutItem(temp: FType | null) {
     this.cutItem = temp

@@ -1,7 +1,6 @@
 import Router from '@koa/router'
 import auth from './auth'
 import file from './file'
-import { Context } from 'koa'
 
 const router = new Router()
 

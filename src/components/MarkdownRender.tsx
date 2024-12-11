@@ -19,7 +19,7 @@ const MarkdownRender = ({ md }: { md: string }) => {
 
   return (
     <div
-      className="markdown-body"
+      className="markdown-body h-full w-full"
       dangerouslySetInnerHTML={{ __html: htmlContent }}
     ></div>
   )

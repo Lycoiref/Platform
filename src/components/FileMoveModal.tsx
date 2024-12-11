@@ -38,7 +38,7 @@ const FileMoveModal = observer(() => {
   }, [filesAndFolders.folderPath])
   return (
     <div
-      className="absolute z-10 h-screen w-screen items-center justify-center bg-[rgba(0,0,0,0.5)]"
+      className="fixed z-10 h-screen w-screen items-center justify-center bg-[rgba(0,0,0,0.5)]"
       style={{ display: basicStates.moveFile ? 'flex' : 'none' }}
     >
       <div className="flex h-[65%] max-h-[600px] w-3/5 max-w-[700px] flex-col rounded-2xl bg-white">

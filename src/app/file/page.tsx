@@ -12,6 +12,7 @@ import {
   FileContextMenu,
   FileMainBody,
   FileMoveModal,
+  FileOnlinePreview,
 } from '@/components'
 import { UserIcon, UploadIcon } from '@/components/static/'
 
@@ -84,6 +85,7 @@ export default function FilePage() {
 
   return (
     <>
+      <FileOnlinePreview />
       <FileMoveModal />
       <div
         className="flex h-screen w-screen"
