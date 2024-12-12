@@ -43,6 +43,7 @@ class CurrentItem {
   item: FType | null = null
   index: number = -1
   resourceLink: string | null = null
+  resourceBlob: Blob | null = null
   constructor() {
     makeAutoObservable(this)
   }
@@ -56,14 +57,15 @@ class CurrentItem {
         'http://localhost:6677/api/file/preview' +
         `?filePath=${encodeURIComponent((this.item as FType).path)}`
       const res = await fetch(url, { method: 'GET' })
-      const blob = await res.blob()
-      this.resourceLink = URL.createObjectURL(blob)
+      this.resourceBlob = await res.blob()
+      this.resourceLink = URL.createObjectURL(this.resourceBlob)
     } catch (error) {
       console.log(error)
     }
   }
   clearResource() {
     this.resourceLink = null
+    this.resourceBlob = null
   }
 }
 

@@ -20,9 +20,11 @@ import {
   TypesMusic,
   TypesPDF,
   TypesVideo,
+  TypesPhoto,
 } from '@/components/static'
 
 const typesIcon = {
+  '.jpg': <TypesPhoto />,
   '.folder': <TypesFolder />,
   '.default': <TypesOthers />,
   '.md': <TypesMarkDown />,
@@ -31,9 +33,12 @@ const typesIcon = {
   '.mp3': <TypesMusic />,
   '.mp4': <TypesVideo />,
   '.doc': <TypesDocx />,
+  '.docx': <TypesDocx />,
 }
 
 type TypeOfFile =
+  | '.jpg'
+  | '.docx'
   | '.md'
   | '.pdf'
   | '.xlsx'

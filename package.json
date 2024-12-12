@@ -15,6 +15,7 @@
     "@douyinfe/semi-ui": "~2.67.2",
     "@shikijs/markdown-it": "~1.22.2",
     "@svgr/webpack": "~8.1.0",
+    "docx-preview": "^0.3.3",
     "github-markdown-css": "~5.7.0",
     "markdown-it": "~14.1.0",
     "mobx": "^6.13.5",

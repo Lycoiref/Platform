@@ -1,6 +1,7 @@
+import { useEffect, useRef } from 'react'
 import { observer } from 'mobx-react'
+import { renderAsync } from 'docx-preview'
 import { currentItem, basicStates } from '@/store/fileStore'
-import { useEffect } from 'react'
 
 const UnknownRender = () => {
   return (
@@ -19,24 +20,11 @@ const UnknownRender = () => {
   )
 }
 
-// const docxRender = (item: FType) => {
-//   return (
-//     <>
-//       {item.name}
-//       <div></div>
-//     </>
-//   )
-// }
-
 // const txtRender = (item: FType) => {
 //   return <div></div>
 // }
 
 // const markdownRender = (item: FType) => {
-//   return <div></div>
-// }
-
-// const pdfRender = (item: FType) => {
 //   return <div></div>
 // }
 
@@ -48,9 +36,15 @@ const UnknownRender = () => {
 //   return <div></div>
 // }
 
+// const pdfRender = (item: FType) => {
+//   return <div></div>
+// }
 const PhotoRender = observer(() => {
   return (
-    <div className="max-w-3/5 max-h-3/5 rounded-xl bg-[#ffffff] p-3">
+    <div
+      className="max-w-3/5 max-h-3/5 rounded-xl bg-[#ffffff] p-3"
+      onClick={(e) => e.stopPropagation()}
+    >
       <div className="h-full w-full">
         <img
           className="h-full w-full object-contain"
@@ -62,10 +56,32 @@ const PhotoRender = observer(() => {
   )
 })
 
+const DocxRender = observer(() => {
+  if (currentItem.resourceBlob) {
+    renderAsync(
+      currentItem.resourceBlob as Blob,
+      document.getElementById('docx') as HTMLElement
+    )
+  }
+  return (
+    <div
+      className="h-4/5 w-4/5 rounded-xl"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div
+        className="h-full w-full overflow-auto rounded-xl bg-[#e5e7eb]"
+        id="docx"
+      ></div>
+    </div>
+  )
+})
+
 const FileOnlineRender = observer(() => {
   const item = currentItem.item
   const extension = item?.name.split('.').slice(-1)[0]
   switch (extension) {
+    case 'docx':
+      return <DocxRender />
     case 'jpg':
       return <PhotoRender />
     default:
@@ -84,8 +100,14 @@ const FileOnlinePreview = observer(() => {
 
   return (
     <div
-      className="fixed z-10 h-screen w-screen items-center justify-center bg-[rgba(0,0,0,0.5)]"
-      style={{ display: basicStates.renderFile ? 'flex' : 'none' }}
+      className="fixed z-10 h-screen w-screen items-center justify-center bg-[rgba(0,0,0,0.4)]"
+      style={{
+        display: basicStates.renderFile ? 'flex' : 'none',
+        backdropFilter:
+          basicStates.moveFile || basicStates.renderFile
+            ? 'blur(2px)'
+            : 'blur(0)',
+      }}
       onClick={() => {
         basicStates.setRenderFile(false)
       }}
