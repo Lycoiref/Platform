@@ -45,23 +45,40 @@ const MarkdownRender = observer(() => {
   )
 })
 
-// const MusicRender = (item: FType) => {
-//   return <div></div>
-// }
+const MusicRender = observer(() => {
+  const musicRef = useRef<HTMLAudioElement | null>(null)
+  useEffect(() => {
+    if (!basicStates.renderFile) musicRef.current?.pause()
+  }, [basicStates.renderFile])
+  return (
+    <div className="flex h-[120px] w-2/5 min-w-[300px] flex-col justify-around rounded-xl bg-[#fafafa] px-4 py-2">
+      <div className="flex items-center justify-start text-sm font-semibold text-[#6b7280]">
+        {currentItem.item?.name}
+      </div>
+      <div className="flex items-center">
+        <audio
+          ref={musicRef}
+          src={currentItem.resourceLink as string}
+          style={{ width: 100 + '%' }}
+          controls
+        ></audio>
+      </div>
+    </div>
+  )
+})
 
 const VideoRender = observer(() => {
+  const mediaSource = new MediaSource()
   const videoRef = useRef<HTMLVideoElement | null>(null)
   videoRef.current?.addEventListener('ended', () => {
     videoRef.current?.pause()
   })
-  if (videoRef.current && currentItem.mediaSource && basicStates.renderFile) {
+  if (videoRef.current && mediaSource && basicStates.renderFile) {
     const mimeCodec = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"'
     if ('MediaSource' in window && MediaSource.isTypeSupported(mimeCodec)) {
-      videoRef.current.src = URL.createObjectURL(
-        currentItem.mediaSource as MediaSource
-      )
-      currentItem.mediaSource?.addEventListener('sourceopen', () => {
-        const sourceBuffer = currentItem.mediaSource?.addSourceBuffer(mimeCodec)
+      videoRef.current.src = URL.createObjectURL(mediaSource as MediaSource)
+      mediaSource.addEventListener('sourceopen', () => {
+        const sourceBuffer = mediaSource.addSourceBuffer(mimeCodec)
         const chunkSize = 1 * 1024 * 1024
         let index = 0
         const send = () => {
@@ -94,10 +111,10 @@ const VideoRender = observer(() => {
               sourceBuffer?.appendBuffer(response)
               sourceBuffer?.addEventListener('updateend', () => {
                 if (
-                  currentItem.mediaSource?.readyState === 'open' &&
+                  mediaSource.readyState === 'open' &&
                   !sourceBuffer.updating
                 ) {
-                  currentItem.mediaSource?.endOfStream()
+                  mediaSource.endOfStream()
                   console.log(sourceBuffer.updating)
                 }
                 send()
@@ -110,11 +127,11 @@ const VideoRender = observer(() => {
               sourceBuffer?.appendBuffer(response)
               sourceBuffer?.addEventListener('updateend', () => {
                 if (
-                  currentItem.mediaSource?.readyState === 'open' &&
+                  mediaSource.readyState === 'open' &&
                   !sourceBuffer.updating
                 ) {
                   console.log(sourceBuffer.updating)
-                  currentItem.mediaSource?.endOfStream()
+                  mediaSource.endOfStream()
                 }
                 send()
               })
@@ -132,14 +149,10 @@ const VideoRender = observer(() => {
   }
 
   if (!basicStates.renderFile) {
-    if (currentItem.mediaSource?.readyState === 'open') {
-      currentItem.mediaSource?.endOfStream()
+    if (mediaSource.readyState === 'open') {
+      mediaSource.endOfStream()
     }
     videoRef.current?.pause()
-    if (currentItem.mediaSource) {
-      console.log('clear')
-      currentItem.setMediaSource(null)
-    }
     URL.revokeObjectURL(videoRef.current?.src as string)
   }
 
@@ -207,6 +220,8 @@ const FileOnlineRender = observer(() => {
   const item = currentItem.item
   const extension = item?.name.split('.').slice(-1)[0]
   switch (extension) {
+    case 'mp3':
+      return <MusicRender />
     case 'txt':
       return <TxtRender />
     case 'md':
@@ -228,8 +243,6 @@ const FileOnlinePreview = observer(() => {
   useEffect(() => {
     if (basicStates.renderFile) {
       currentItem.fetchResource()
-      if (currentItem.item?.name.split('.').slice(-1)[0] === 'mp4')
-        currentItem.setMediaSource(new MediaSource())
     } else {
       currentItem.clearResource()
     }
