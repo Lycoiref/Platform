@@ -2,6 +2,7 @@ import { Context } from 'koa'
 import path from 'path'
 import fs, { copyFileSync } from 'fs'
 import archiver from 'archiver'
+import ffmpeg from 'fluent-ffmpeg'
 
 function copyFolder(oldFolderPath: string, newFolderPath: string) {
   fs.mkdirSync(newFolderPath)
@@ -244,6 +245,7 @@ export const mergeUploadedChunk = async (ctx: Context) => {
     }
     targetPath += `${i}`
   }
+  const tempPath = targetPath + '_temp' + '.' + (name as string).split('.')[1]
   targetPath += '.' + (name as string).split('.')[1]
   fs.writeFileSync(targetPath, '')
   uploadChunks.sort((a, b) => Number(a) - Number(b))
@@ -252,15 +254,64 @@ export const mergeUploadedChunk = async (ctx: Context) => {
     fs.appendFileSync(targetPath, chunkFile)
   }
   fs.rmSync(originalPath, { recursive: true })
-  ctx.body = {
-    message: '(:',
+  if (path.extname(targetPath) === '.mp4') {
+    console.log(1)
+    ffmpeg(targetPath)
+      .outputOptions(
+        ' -c:v libx264', // 使用H.264视频编码
+        '-c:a aac', // 使用AAC音频编码
+        '-f mp4', // 指定输出格式为mp4
+        '-movflags +faststart', // 确保moov头移动到文件的开头，支持流式播放
+        '+frag_keyframe', // 以关键帧为分片的开始
+        '+empty_moov', // 确保moov盒子存在
+        '+default_base_moof',
+        '-frag_duration 1000000'
+      )
+      .output(tempPath)
+      .on('end', () => {
+        console.log('Conversion finished!')
+        fs.unlinkSync(targetPath)
+        fs.renameSync(tempPath, targetPath)
+        ctx.body = {
+          message: ':)',
+        }
+        ctx.status = 200
+      })
+      .on('error', (err) => {
+        console.error('Error:', err)
+      })
+      .run()
+  } else {
+    ctx.body = {
+      message: ':)',
+    }
+    ctx.status = 200
   }
-  ctx.status = 200
 }
 
 export const filePreview = async (ctx: Context) => {
   const { filePath } = ctx.query
   const dirPath = path.join(__dirname, '../../files', filePath as string)
-  ctx.body = fs.createReadStream(dirPath)
-  ctx.status = 200
+  const stat = fs.statSync(dirPath)
+  if (path.extname(dirPath) === '.mp4') {
+    const range = ctx.req.headers.range as string
+    const parts = range.replace(/bytes=/, '').split('-')
+    const start = Number(parts[0])
+    const end = Number(parts[1]) || stat.size - 1
+    ctx.set('Content-Range', `bytes ${start}-${end}/${stat.size}`)
+    ctx.type = 'video/mp4'
+    ctx.set('Accept-Ranges', 'bytes')
+    ctx.status = 206
+    const stream = fs.createReadStream(dirPath, {
+      start,
+      end,
+    })
+    ctx.body = stream
+  } else {
+    ctx.body = fs.createReadStream(dirPath)
+    ctx.status = 200
+    if (path.extname(dirPath) === '.pdf') {
+      ctx.type = 'pdf'
+    }
+  }
 }

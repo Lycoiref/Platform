@@ -13,6 +13,7 @@ import TypesMusic from './TypesMusic.svg'
 import TypesPDF from './TypesPDF.svg'
 import TypesPhoto from './TypesPhoto.svg'
 import TypesVideo from './TypesVideo.svg'
+import TypesTxt from './TypesTxt.svg'
 import ExpandIconA from './ExpandIconA.svg'
 import ExpandIconB from './ExpandIconB.svg'
 import UserIcon from './UserIcon.svg'
@@ -48,6 +49,7 @@ export {
   TypesVideo,
   TypesPhoto,
   TypesPDF,
+  TypesTxt,
   ExpandIconA,
   ExpandIconB,
   UserIcon,

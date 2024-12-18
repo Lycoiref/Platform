@@ -9,8 +9,10 @@ import {
 } from '@/store/fileStore'
 import { TypesFolder } from './static'
 
+const baseURL = process.env.NEXT_PUBLIC_BASE_URL
+
 const folderReader = async (currentPath: string) => {
-  let url = 'http://localhost:6677/api/file/reader'
+  let url = `${baseURL}/api/file/reader`
   url += '?' + `pathQuery=${encodeURIComponent(currentPath)}`
   const response = await fetch(url, {
     method: 'GET',

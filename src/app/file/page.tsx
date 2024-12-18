@@ -16,6 +16,8 @@ import {
 } from '@/components'
 import { UserIcon, UploadIcon } from '@/components/static/'
 
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
+
 export default function FilePage() {
   const uploadRef = useRef<HTMLInputElement>(null)
 
@@ -33,7 +35,7 @@ export default function FilePage() {
       alert('单次上传总量不可超过10GB哦,本次操作已取消 ):')
       return
     }
-    let url = 'http://localhost:6677/api/file/upload'
+    let url = `${baseUrl}/api/file/upload`
 
     url += `?pathQuery=${encodeURIComponent(filesAndFolders.totalPath)}`
 
@@ -57,7 +59,7 @@ export default function FilePage() {
       await Promise.all(promises)
         .then(async () => {
           await fetch(
-            `http://localhost:6677/api/file/merge` +
+            `${baseUrl}/api/file/merge` +
               `?pathQuery=${encodeURIComponent(filesAndFolders.totalPath)}` +
               `&name=${encodeURIComponent(file.name)}`
           )
