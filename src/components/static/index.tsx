@@ -11,7 +11,9 @@ import TypesDocx from './TypesDocx.svg'
 import TypesExcel from './TypesExcel.svg'
 import TypesMusic from './TypesMusic.svg'
 import TypesPDF from './TypesPDF.svg'
+import TypesPhoto from './TypesPhoto.svg'
 import TypesVideo from './TypesVideo.svg'
+import TypesTxt from './TypesTxt.svg'
 import ExpandIconA from './ExpandIconA.svg'
 import ExpandIconB from './ExpandIconB.svg'
 import UserIcon from './UserIcon.svg'
@@ -23,7 +25,6 @@ import ContextMenuDownload from './ContextMenuDownload.svg'
 import ContextMenuMove from './ContextMenuMove.svg'
 import ContextMenuPaste from './ContextMenuPaste.svg'
 import ContextMenuRename from './ContextMenuRename.svg'
-
 
 export {
   ContextMenuCopy,
@@ -46,7 +47,9 @@ export {
   TypesExcel,
   TypesMusic,
   TypesVideo,
+  TypesPhoto,
   TypesPDF,
+  TypesTxt,
   ExpandIconA,
   ExpandIconB,
   UserIcon,

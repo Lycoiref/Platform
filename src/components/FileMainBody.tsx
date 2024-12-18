@@ -20,9 +20,14 @@ import {
   TypesMusic,
   TypesPDF,
   TypesVideo,
+  TypesTxt,
+  TypesPhoto,
 } from '@/components/static'
 
+const baseURL = process.env.NEXT_PUBLIC_BASE_URL
+
 const typesIcon = {
+  '.jpg': <TypesPhoto />,
   '.folder': <TypesFolder />,
   '.default': <TypesOthers />,
   '.md': <TypesMarkDown />,
@@ -31,9 +36,13 @@ const typesIcon = {
   '.mp3': <TypesMusic />,
   '.mp4': <TypesVideo />,
   '.doc': <TypesDocx />,
+  '.docx': <TypesDocx />,
+  '.txt': <TypesTxt />,
 }
 
 type TypeOfFile =
+  | '.jpg'
+  | '.docx'
   | '.md'
   | '.pdf'
   | '.xlsx'
@@ -41,6 +50,7 @@ type TypeOfFile =
   | '.mp4'
   | '.mp3'
   | '.doc'
+  | '.txt'
 
 const getIcon = (f: FType) => {
   if (f.size != null) {
@@ -64,7 +74,7 @@ const createAction = async (name: string | undefined) => {
     filesReader()
     return
   }
-  let url = 'http://localhost:6677/api/file/create?'
+  let url = `${baseURL}/api/file/create?`
   if (filesAndFolders.totalPath)
     url += `folderPath=${encodeURIComponent(filesAndFolders.totalPath)}&`
   url += `folderName=${encodeURIComponent(name)}`
@@ -166,7 +176,7 @@ const FilesRender = observer(() => {
           return (
             <div className="flex h-[170px] w-[140px] flex-col items-center justify-center pb-[20px] pl-[30px]">
               <div
-                className="flex h-full w-full flex-col items-center rounded-lg px-3 hover:bg-[#f4f4f5]"
+                className="flex h-full w-full cursor-pointer flex-col items-center rounded-lg px-3 hover:bg-[#f4f4f5]"
                 onContextMenu={(e) => {
                   basicStates.setRenameInput(undefined)
                   currentItem.reset(item, index)
@@ -186,6 +196,7 @@ const FilesRender = observer(() => {
                     )
                   else {
                     basicStates.setRenderFile(true)
+                    console.log('test2')
                   }
                 }}
                 onCut={() => {

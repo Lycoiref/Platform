@@ -19,8 +19,10 @@ import {
 } from '@/components/static'
 import { observer } from 'mobx-react'
 
+const baseURL = process.env.NEXT_PUBLIC_BASE_URL
+
 const deleteFileOrFolder = async (fname: string, fSize: number | null) => {
-  let url = 'http://localhost:6677/api/file/delete'
+  let url = `${baseURL}/api/file/delete`
   url +=
     '?' +
     `pathQuery=${encodeURIComponent(filesAndFolders.totalPath + '/' + fname)}`
@@ -32,7 +34,7 @@ const deleteFileOrFolder = async (fname: string, fSize: number | null) => {
 }
 
 const downloadFileOrFolder = async (file: FType) => {
-  let url = 'http://localhost:6677/api/file/downloadOne'
+  let url = `${baseURL}/api/file/downloadOne`
   url += `?filePath=${encodeURIComponent(file.path)}`
   const res = await fetch(url, {
     method: 'GET',
@@ -70,6 +72,7 @@ const FileContextMenu = observer(() => {
           else {
             e.stopPropagation()
             basicStates.setShowMenu(false)
+            console.log('test1')
             basicStates.setRenderFile(true)
           }
         }}

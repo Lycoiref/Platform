@@ -1,6 +1,8 @@
 import { makeAutoObservable } from 'mobx'
 import React from 'react'
 
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
+
 export interface FType {
   name: string
   size: number | null
@@ -43,27 +45,43 @@ class CurrentItem {
   item: FType | null = null
   index: number = -1
   resourceLink: string | null = null
+  resourceBlob: Blob | null = null
+  mediaSource: MediaSource | null = null
   constructor() {
     makeAutoObservable(this)
   }
   reset(tempItem: FType | null, tempIndex: number) {
     this.item = tempItem
     this.index = tempIndex
+    if (tempItem?.name.split('.').slice(-1)[0] === 'mp4') {
+      this.setMediaSource(new MediaSource())
+    }
+  }
+
+  setMediaSource(newMedia: MediaSource | null) {
+    this.mediaSource = newMedia
   }
   async fetchResource() {
     try {
-      const url =
-        'http://localhost:6677/api/file/preview' +
-        `?filePath=${encodeURIComponent((this.item as FType).path)}`
-      const res = await fetch(url, { method: 'GET' })
-      const blob = await res.blob()
-      this.resourceLink = URL.createObjectURL(blob)
+      if (this.item?.name.split('.').slice(-1)[0] == 'mp4') {
+        return
+      } else {
+        const url =
+          `${baseUrl}/api/file/preview` +
+          `?filePath=${encodeURIComponent((this.item as FType).path)}`
+        const res = await fetch(url, { method: 'GET' })
+        this.resourceBlob = await res.blob()
+        this.resourceLink = URL.createObjectURL(this.resourceBlob)
+      }
     } catch (error) {
       console.log(error)
     }
   }
+
   clearResource() {
+    URL.revokeObjectURL(this.resourceLink as string)
     this.resourceLink = null
+    this.resourceBlob = null
   }
 }
 
@@ -107,7 +125,7 @@ export const basicStates = new BasicStates()
 
 export const filesReader = async () => {
   try {
-    let url = 'http://localhost:6677/api/file/reader'
+    let url = `${baseUrl}/api/file/reader`
     url += '?' + `pathQuery=${encodeURIComponent(filesAndFolders.totalPath)}`
     const response = await fetch(url, {
       method: 'GET',
@@ -153,7 +171,7 @@ export const pasteFileOrFolder = async (
   newPath: string,
   operation: number
 ) => {
-  let url = 'http://localhost:6677/api/file/paste'
+  let url = `${baseUrl}/api/file/paste`
   url += `?oldPath=${encodeURIComponent(
     oldPath
   )}&newPath=${encodeURIComponent(newPath)}&operationType=${
@@ -164,7 +182,7 @@ export const pasteFileOrFolder = async (
 }
 
 export const renameFileOrFolder = async (f: FType, newName: string) => {
-  let url = 'http://localhost:6677/api/file/rename?'
+  let url = `${baseUrl}/api/file/rename?`
   if (filesAndFolders.totalPath)
     url +=
       `fPath=${encodeURIComponent(filesAndFolders.totalPath)}&` +
