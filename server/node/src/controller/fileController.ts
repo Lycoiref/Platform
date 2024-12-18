@@ -255,32 +255,36 @@ export const mergeUploadedChunk = async (ctx: Context) => {
   }
   fs.rmSync(originalPath, { recursive: true })
   if (path.extname(targetPath) === '.mp4') {
-    console.log(1)
-    ffmpeg(targetPath)
-      .outputOptions(
-        ' -c:v libx264', // 使用H.264视频编码
-        '-c:a aac', // 使用AAC音频编码
-        '-f mp4', // 指定输出格式为mp4
-        '-movflags +faststart', // 确保moov头移动到文件的开头，支持流式播放
-        '+frag_keyframe', // 以关键帧为分片的开始
-        '+empty_moov', // 确保moov盒子存在
-        '+default_base_moof',
-        '-frag_duration 1000000'
-      )
-      .output(tempPath)
-      .on('end', () => {
-        console.log('Conversion finished!')
-        fs.unlinkSync(targetPath)
-        fs.renameSync(tempPath, targetPath)
-        ctx.body = {
-          message: ':)',
-        }
-        ctx.status = 200
+    const convert = async () => {
+      return new Promise<void>((resolve, reject) => {
+        ffmpeg(targetPath)
+          .outputOptions(
+            '-movflags',
+            'frag_keyframe+empty_moov+default_base_moof'
+          )
+          .output(tempPath)
+          .on('end', () => {
+            try {
+              fs.unlinkSync(targetPath)
+              fs.renameSync(tempPath, targetPath)
+              console.log('Conversion finished!')
+              ctx.body = {
+                message: ':)',
+              }
+              ctx.status = 200
+              resolve()
+            } catch (err) {
+              console.error('文件操作错误:', err)
+              reject(err) // 捕获文件操作错误并拒绝 Promise
+            }
+          })
+          .on('error', (err) => {
+            console.error('Error:', err)
+          })
+          .run()
       })
-      .on('error', (err) => {
-        console.error('Error:', err)
-      })
-      .run()
+    }
+    await convert()
   } else {
     ctx.body = {
       message: ':)',

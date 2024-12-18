@@ -46,21 +46,14 @@ class CurrentItem {
   index: number = -1
   resourceLink: string | null = null
   resourceBlob: Blob | null = null
-  mediaSource: MediaSource | null = null
   constructor() {
     makeAutoObservable(this)
   }
   reset(tempItem: FType | null, tempIndex: number) {
     this.item = tempItem
     this.index = tempIndex
-    if (tempItem?.name.split('.').slice(-1)[0] === 'mp4') {
-      this.setMediaSource(new MediaSource())
-    }
   }
 
-  setMediaSource(newMedia: MediaSource | null) {
-    this.mediaSource = newMedia
-  }
   async fetchResource() {
     try {
       if (this.item?.name.split('.').slice(-1)[0] == 'mp4') {
