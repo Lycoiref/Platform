@@ -180,13 +180,12 @@ const FilePage = () => {
 }
 export default () => {
   const [isLogin, setIsLogin] = useState(0)
-  const token = localStorage.getItem('token')
   const judgeToken = async () => {
     return new Promise<void>((resolve) => {
       try {
         fetch(`${baseUrl}/api/certification`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         }).then((res) => {
           setTimeout(() => {
