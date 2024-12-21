@@ -54,7 +54,6 @@ const AuthForm = (props: AuthFormProps) => {
       // 设置token
       const token = data.token
       localStorage.setItem('token', token)
-
       // 跳转到首页
       window.location.href = '/'
     } else {

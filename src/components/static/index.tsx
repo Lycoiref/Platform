@@ -25,8 +25,10 @@ import ContextMenuDownload from './ContextMenuDownload.svg'
 import ContextMenuMove from './ContextMenuMove.svg'
 import ContextMenuPaste from './ContextMenuPaste.svg'
 import ContextMenuRename from './ContextMenuRename.svg'
+import LoadingState from './LoadingState.svg'
 
 export {
+  LoadingState,
   ContextMenuCopy,
   ContextMenuCut,
   ContextMenuDelete,

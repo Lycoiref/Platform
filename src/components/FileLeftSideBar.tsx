@@ -92,8 +92,8 @@ const FileLeftSideBar = () => {
           </div>
         </div>
       </div>
-      <div className="absolute z-10 block h-full bg-[#f9fafb] md:hidden">
-        <div className="relative">
+      <div className="fixed z-10 block h-full bg-[#f9fafb] md:hidden">
+        <div>
           <div
             style={{
               opacity: showLeftBar ? 1 : 0,
@@ -101,7 +101,10 @@ const FileLeftSideBar = () => {
               transition: 'all 0.3s ease',
             }}
           >
-            <div className="flex h-full w-full flex-col items-center p-8">
+            <div
+              className="flex h-full w-full flex-col items-center p-8"
+              style={{ padding: showLeftBar ? '32px' : '0px' }}
+            >
               <div
                 onClick={() => {
                   filesAndFolders.setTotalPath('')
@@ -150,7 +153,7 @@ const FileLeftSideBar = () => {
             </div>
           </div>
           <div
-            className="absolute top-[15vw] flex h-[6vw] w-[6vw] cursor-pointer items-center justify-center rounded-full bg-[#f9fafb]"
+            className="fixed top-[15vw] flex h-[6vw] w-[6vw] cursor-pointer items-center justify-center rounded-full bg-[#f9fafb]"
             style={{
               left: showLeftBar ? '68vw' : '2vw',
               transform: showLeftBar ? 'rotate(90deg)' : 'rotate(-90deg)',

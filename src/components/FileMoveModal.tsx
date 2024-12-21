@@ -1,43 +1,13 @@
-import { useEffect } from 'react'
 import { observer } from 'mobx-react'
 import {
   filesAndFolders,
   basicStates,
   currentItem,
-  FType,
   pasteFileOrFolder,
 } from '@/store/fileStore'
 import { TypesFolder } from './static'
 
-const baseURL = process.env.NEXT_PUBLIC_BASE_URL
-
-const folderReader = async (currentPath: string) => {
-  let url = `${baseURL}/api/file/reader`
-  url += '?' + `pathQuery=${encodeURIComponent(currentPath)}`
-  const response = await fetch(url, {
-    method: 'GET',
-  })
-  const result = await response.json()
-  const temp: FType[] = []
-  for (const folder of result.folders) {
-    temp.push({
-      path: folder.folderPath,
-      name: folder.folderName,
-      size: null,
-      isBeingRenamed: false,
-      lastModified: new Date(folder.lastModified),
-    })
-  }
-  filesAndFolders.resetFolders(temp)
-}
-
 const FileMoveModal = observer(() => {
-  useEffect(() => {
-    folderReader(filesAndFolders.folderPath)
-  }, [basicStates.showMenu])
-  useEffect(() => {
-    folderReader(filesAndFolders.folderPath)
-  }, [filesAndFolders.folderPath])
   return (
     <div
       className="fixed z-10 h-screen w-screen items-center justify-center bg-[rgba(0,0,0,0.5)]"

@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { observer } from 'mobx-react'
 import { Input, Notification } from '@douyinfe/semi-ui'
 import {
@@ -22,6 +21,7 @@ import {
   TypesVideo,
   TypesTxt,
   TypesPhoto,
+  LoadingState,
 } from '@/components/static'
 
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL
@@ -71,6 +71,7 @@ const onContextMenu = (e: React.MouseEvent) => {
 
 const createAction = async (name: string | undefined) => {
   if (!name) {
+    console.log('newFolder')
     filesReader()
     return
   }
@@ -78,23 +79,25 @@ const createAction = async (name: string | undefined) => {
   if (filesAndFolders.totalPath)
     url += `folderPath=${encodeURIComponent(filesAndFolders.totalPath)}&`
   url += `folderName=${encodeURIComponent(name)}`
-  await fetch(url)
+  await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+  })
+  console.log('newFolder')
   filesReader()
 }
 
 const FilesRender = observer(() => {
-  useEffect(() => {
-    if (filesAndFolders.refs[currentItem.index])
-      setTimeout(() => {
-        filesAndFolders.refs[currentItem.index]?.current?.focus()
-      }, 0)
-  }, [basicStates.renameInput, filesAndFolders.refs])
-
-  useEffect(() => {
-    filesReader()
-  }, [filesAndFolders.totalPath])
-
-  return (
+  return basicStates.isLoading ? (
+    <>
+      <div className="flex w-full flex-1 flex-col items-center justify-center">
+        <LoadingState width={100} height={100} />
+        <div className="text-2xl font-semibold">Loading...</div>
+      </div>
+      <div className="h-[25%]"></div>
+    </>
+  ) : (
     <>
       <div className="flex h-[1.8rem] w-full items-center px-[3%] text-xs font-semibold">
         <div
@@ -272,6 +275,7 @@ const FilesRender = observer(() => {
                               duration: 2,
                               position: 'top',
                             })
+                            console.log('changeName')
                             filesReader()
                           }
                           basicStates.setRenameInput(undefined)

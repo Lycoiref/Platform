@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx'
+import { makeAutoObservable, reaction } from 'mobx'
 import React from 'react'
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
@@ -19,6 +19,18 @@ class FilesAndFolders {
   folderPath: string = ''
   constructor() {
     makeAutoObservable(this)
+    reaction(
+      () => this.totalPath, // 监听 `totalPath`
+      () => {
+        filesReader() // 执行副作用操作
+      }
+    )
+    reaction(
+      () => this.folderPath,
+      () => {
+        folderReader(this.folderPath)
+      }
+    )
   }
   resetAll(temp: FType[]) {
     this.files = [...temp]
@@ -62,7 +74,12 @@ class CurrentItem {
         const url =
           `${baseUrl}/api/file/preview` +
           `?filePath=${encodeURIComponent((this.item as FType).path)}`
-        const res = await fetch(url, { method: 'GET' })
+        const res = await fetch(url, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        })
         this.resourceBlob = await res.blob()
         this.resourceLink = URL.createObjectURL(this.resourceBlob)
       }
@@ -81,6 +98,7 @@ class CurrentItem {
 class BasicStates {
   renameInput: string | undefined = undefined
   mousePosition: { x: number; y: number } = { x: 0, y: 0 }
+  isLoading: boolean = false
   showMenu: boolean = false
   moveFile: boolean = false
   renderFile: boolean = false
@@ -88,6 +106,28 @@ class BasicStates {
   copyItem: FType | null = null
   constructor() {
     makeAutoObservable(this)
+    reaction(
+      () => this.renameInput,
+      () => {
+        filesAndFolders.refs[currentItem.index]?.current?.focus()
+      }
+    )
+    reaction(
+      () => this.showMenu,
+      () => {
+        folderReader(filesAndFolders.folderPath)
+      }
+    )
+    reaction(
+      () => this.renderFile,
+      () => {
+        if (this.renderFile) currentItem.fetchResource()
+        else currentItem.clearResource()
+      }
+    )
+  }
+  setIsLoading(isLoading: boolean) {
+    this.isLoading = isLoading
   }
   setRenameInput(newInput: string | undefined) {
     this.renameInput = newInput
@@ -115,13 +155,16 @@ class BasicStates {
 export const filesAndFolders = new FilesAndFolders()
 export const currentItem = new CurrentItem()
 export const basicStates = new BasicStates()
-
 export const filesReader = async () => {
+  basicStates.setIsLoading(true)
   try {
     let url = `${baseUrl}/api/file/reader`
     url += '?' + `pathQuery=${encodeURIComponent(filesAndFolders.totalPath)}`
     const response = await fetch(url, {
       method: 'GET',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
     })
     const result = await response.json()
     const temp: FType[] = []
@@ -147,7 +190,10 @@ export const filesReader = async () => {
   } catch (error) {
     console.log('文件读取错误 ):', error)
     filesAndFolders.setTotalPath('')
-    return
+  } finally {
+    setTimeout(() => {
+      basicStates.setIsLoading(false)
+    }, 300)
   }
 }
 
@@ -170,7 +216,12 @@ export const pasteFileOrFolder = async (
   )}&newPath=${encodeURIComponent(newPath)}&operationType=${
     operation ? 'cut' : 'copy'
   }`
-  await fetch(url)
+  await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+  })
+  console.log('paste')
   filesReader()
 }
 
@@ -186,6 +237,34 @@ export const renameFileOrFolder = async (f: FType, newName: string) => {
       'fPath=0&' +
       `originalName=${encodeURIComponent(f.name)}&` +
       `newName=${encodeURIComponent(newName)}`
-  await fetch(url)
+  await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+  })
+  console.log('rename')
   filesReader()
+}
+
+const folderReader = async (currentPath: string) => {
+  let url = `${baseUrl}/api/file/reader`
+  url += '?' + `pathQuery=${encodeURIComponent(currentPath)}`
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+  })
+  const result = await response.json()
+  const temp: FType[] = []
+  for (const folder of result.folders) {
+    temp.push({
+      path: folder.folderPath,
+      name: folder.folderName,
+      size: null,
+      isBeingRenamed: false,
+      lastModified: new Date(folder.lastModified),
+    })
+  }
+  filesAndFolders.resetFolders(temp)
 }
