@@ -29,7 +29,12 @@ const deleteFileOrFolder = async (fname: string, fSize: number | null) => {
   if (fSize != null) {
     url += '&type=file'
   } else url += '&type=folder'
-  await fetch(url)
+  await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+  })
+  console.log('delete')
   filesReader()
 }
 
@@ -38,6 +43,9 @@ const downloadFileOrFolder = async (file: FType) => {
   url += `?filePath=${encodeURIComponent(file.path)}`
   const res = await fetch(url, {
     method: 'GET',
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
   })
   const blob = await res.blob()
   const link = document.createElement('a')
@@ -94,6 +102,7 @@ const FileContextMenu = observer(() => {
         onClick={() => {
           if (basicStates.cutItem !== null) {
             basicStates.setCutItem(null)
+            console.log('download')
             filesReader()
           }
           basicStates.setCopyItem(item)

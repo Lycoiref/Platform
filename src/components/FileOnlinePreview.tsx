@@ -97,6 +97,7 @@ const VideoRender = observer(() => {
             headers: {
               Range: `bytes=${start}-${end}`,
               responseType: 'arraybuffer',
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
             },
           }).then(async (res) => {
             const response = await res.arrayBuffer()
@@ -240,14 +241,6 @@ const FileOnlineRender = observer(() => {
 })
 
 const FileOnlinePreview = observer(() => {
-  useEffect(() => {
-    if (basicStates.renderFile) {
-      currentItem.fetchResource()
-    } else {
-      currentItem.clearResource()
-    }
-  }, [basicStates.renderFile])
-
   return (
     <div
       className="fixed z-10 h-screen w-screen items-center justify-center bg-[rgba(0,0,0,0.4)]"
@@ -260,7 +253,6 @@ const FileOnlinePreview = observer(() => {
       }}
       onClick={() => {
         basicStates.setRenderFile(false)
-        console.log('test3')
       }}
     >
       <FileOnlineRender />

@@ -1,5 +1,5 @@
 'use client'
-import React, { useLayoutEffect, useRef } from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import {
   filesAndFolders,
   currentItem,
@@ -14,11 +14,12 @@ import {
   FileMoveModal,
   FileOnlinePreview,
 } from '@/components'
-import { UserIcon, UploadIcon } from '@/components/static/'
+import { UserIcon, UploadIcon, LoadingState } from '@/components/static/'
+import { Toast } from '@douyinfe/semi-ui'
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
 
-export default function FilePage() {
+const FilePage = () => {
   const uploadRef = useRef<HTMLInputElement>(null)
 
   const uploadClick = () => {
@@ -53,6 +54,9 @@ export default function FilePage() {
         const res = fetch(url, {
           method: 'POST',
           body: formData,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
         })
         promises.push(res)
       }
@@ -61,13 +65,19 @@ export default function FilePage() {
           await fetch(
             `${baseUrl}/api/file/merge` +
               `?pathQuery=${encodeURIComponent(filesAndFolders.totalPath)}` +
-              `&name=${encodeURIComponent(file.name)}`
+              `&name=${encodeURIComponent(file.name)}`,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+              },
+            }
           )
         })
         .catch((error) => {
           console.log('传送出错啦！本次传输暂停！！', error)
           return
         })
+      console.log('upload')
       filesReader()
     }
   }
@@ -82,6 +92,7 @@ export default function FilePage() {
   }
 
   useLayoutEffect(() => {
+    console.log(localStorage.getItem('token'))
     filesReader()
   }, [])
 
@@ -164,6 +175,54 @@ export default function FilePage() {
           </div>
         </div>
       </div>
+    </>
+  )
+}
+export default () => {
+  const [isLogin, setIsLogin] = useState(0)
+  const token = localStorage.getItem('token')
+  const judgeToken = async () => {
+    return new Promise<void>((resolve) => {
+      try {
+        fetch(`${baseUrl}/api/certification`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }).then((res) => {
+          setTimeout(() => {
+            if (res.status === 401) setIsLogin(-1)
+            else setIsLogin(1)
+          }, 1000)
+          resolve()
+        })
+      } catch (err) {
+        console.log(err)
+      }
+    })
+  }
+  judgeToken()
+  useEffect(() => {
+    if (isLogin === -1)
+      Toast.error({
+        content: '未登录或登录信息过期，请重新登录',
+        duration: 3,
+        onClose: () => {
+          window.location.href = '/auth'
+        },
+      })
+  }, [isLogin])
+  return (
+    <>
+      {isLogin === 0 ? (
+        <div className="flex h-screen w-screen flex-col items-center justify-center">
+          <LoadingState />
+          <div className="text-3xl">Loading...</div>
+        </div>
+      ) : isLogin === 1 ? (
+        <FilePage />
+      ) : (
+        <></>
+      )}
     </>
   )
 }
