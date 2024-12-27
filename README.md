@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# HelloWorld Platform
+
+这是一个platform模板，适用于各种团体管理（如社团，班级，家庭等等）
+
+## Before Started
+
+快速开始
+
+```bash
+# 克隆项目
+$ git clone git@github.com:Lycoiref/Platform.git
+
+# 进入项目进行相关操作
+$ cd Platform
+```
+
+在启动此项目之前，需要在根目录下新建 .env 文件并在其中配置服务端启动地址（若无需部署到云端请按如下配置，若需要则按需改动）
+
+NEXT_PUBLIC_BASE_URL = "http://localhost:6677"
+
+另外还需在 /server/node 新建 .env 文件配置 postgres 数据库所在位置与 JWT 密钥
+如：
+
+DATABASE_URL = "postgresql://role:password@ip/name?schema=public"
+
+SECRET_KEY = 'Your_Key'
 
 ## Getting Started
 
-First, run the development server:
+第一步，启动服务端
+
+在 /server/node 下运行
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+$ pnpm install # 安装依赖
+
+$ npm start # 启动服务端
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+安装依赖 & 启动调试
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+$ pnpm install
+$ pnpm dev
+# or
+$ yarn
+$ yarn dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+即可在本地地址 http://localhost:3000 查看项目啦 : )
 
-## Learn More
+## Technology Stack
 
-To learn more about Next.js, take a look at the following resources:
+### 本项目采用前后端分离的开发模式，具体技术栈如下所示
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Frontend : Next.js
+- Backend : koa & golang & rust
+- Database : Postgres
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### ui
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- semi-design
