@@ -4,6 +4,13 @@ import fs, { copyFileSync } from 'fs'
 import archiver from 'archiver'
 import ffmpeg from 'fluent-ffmpeg'
 
+interface FType {
+  fileName: string
+  filePath: string
+  fileSize: number
+  lastModified: Date
+}
+
 function copyFolder(oldFolderPath: string, newFolderPath: string) {
   fs.mkdirSync(newFolderPath)
   const folder = fs.readdirSync(oldFolderPath)
@@ -13,6 +20,45 @@ function copyFolder(oldFolderPath: string, newFolderPath: string) {
     if (fs.statSync(formerPath).isFile()) fs.copyFileSync(formerPath, laterPath)
     else copyFolder(formerPath, laterPath)
   })
+}
+
+function searchFiles(category: string, dirPath: string, files: FType[]) {
+  const tempFiles = fs.readdirSync(dirPath)
+  tempFiles.forEach((file) => {
+    if (!fs.statSync(path.join(dirPath, file)).isFile())
+      searchFiles(category, path.join(dirPath, file), files)
+    else if (category != 'others' && path.extname(file) === `.${category}`) {
+      files.push({
+        fileName: file,
+        filePath: path.join(dirPath, file),
+        fileSize: fs.statSync(path.join(dirPath, file)).size,
+        lastModified: fs.statSync(path.join(dirPath, file)).mtime,
+      })
+    } else if (
+      category == 'others' &&
+      path.extname(file) !== `.mp3` &&
+      path.extname(file) !== `.mp4` &&
+      path.extname(file) !== `.jpg` &&
+      path.extname(file) !== `.txt`
+    ) {
+      files.push({
+        fileName: file,
+        filePath: path.join(dirPath, file),
+        fileSize: fs.statSync(path.join(dirPath, file)).size,
+        lastModified: fs.statSync(path.join(dirPath, file)).mtime,
+      })
+    }
+  })
+}
+
+export const filterFiles = async (ctx: Context) => {
+  const dirPath = path.join(__dirname, '../../files')
+  const { category } = ctx.query
+  let files: FType[] = []
+  searchFiles(category as string, dirPath, files)
+  ctx.body = {
+    files: files,
+  }
 }
 
 export const filesReader = async (ctx: Context) => {

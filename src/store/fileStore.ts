@@ -11,6 +11,8 @@ export interface FType {
   lastModified: Date
 }
 
+export type Convert = 1 | 2 | 3 | 4 | 5
+
 class FilesAndFolders {
   files: FType[] = []
   folders: FType[] = []
@@ -99,6 +101,7 @@ class BasicStates {
   renameInput: string | undefined = undefined
   mousePosition: { x: number; y: number } = { x: 0, y: 0 }
   isLoading: boolean = false
+  isSearching: boolean = false
   showMenu: boolean = false
   moveFile: boolean = false
   renderFile: boolean = false
@@ -125,6 +128,9 @@ class BasicStates {
         else currentItem.clearResource()
       }
     )
+  }
+  setIsSearching(isSearching: boolean) {
+    this.isSearching = isSearching
   }
   setIsLoading(isLoading: boolean) {
     this.isLoading = isLoading
@@ -155,6 +161,51 @@ class BasicStates {
 export const filesAndFolders = new FilesAndFolders()
 export const currentItem = new CurrentItem()
 export const basicStates = new BasicStates()
+
+export const filterFiles = async (category: number | string) => {
+  switch (category) {
+    case 1:
+      category = 'txt'
+      break
+    case 2:
+      category = 'mp3'
+      break
+    case 3:
+      category = 'mp4'
+      break
+    case 4:
+      category = 'jpg'
+      break
+    case 5:
+      category = 'others'
+      break
+  }
+  basicStates.setIsLoading(true)
+  let url = `${baseUrl}/api/file/filter`
+  url += '?' + `category=${category}`
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+  })
+  const result = await response.json()
+  const temp: FType[] = []
+  for (const file of result.files) {
+    temp.push({
+      name: file.fileName,
+      path: file.filePath.replace(/\\/g, '/'),
+      size: file.fileSize,
+      isBeingRenamed: false,
+      lastModified: new Date(file.lastModified),
+    })
+  }
+  filesAndFolders.resetAll([...temp])
+  setTimeout(() => {
+    basicStates.setIsLoading(false)
+  }, 300)
+}
+
 export const filesReader = async () => {
   basicStates.setIsLoading(true)
   try {

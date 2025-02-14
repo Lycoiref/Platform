@@ -124,7 +124,7 @@ const FilePage = () => {
             </div>
           </div>
           <div className="flex h-[92%] p-[3%]">
-            <div className="flex w-full flex-col rounded-lg py-2 shadow-[0_0_1px_2px_rgba(0,0,0,0.05)] md:w-[71%]">
+            <div className="flex w-full flex-col rounded-lg py-2 shadow-[0_0_1px_2px_rgba(0,0,0,0.05)] md:w-[68%]">
               <div className="flex h-[3.2rem] w-full items-center gap-[2.5%] px-[4%] text-xs font-semibold md:text-sm">
                 <div
                   className="flex h-[2rem] w-[15%] cursor-pointer items-center justify-center gap-x-2 rounded-full bg-[#64748b] text-[#ffffff]"
@@ -158,7 +158,6 @@ const FilePage = () => {
                       ...filesAndFolders.files,
                     ])
                     currentItem.reset(newFolder, 0)
-                    basicStates.setRenameInput('')
                   }}
                 >
                   新建文件夹
@@ -167,9 +166,8 @@ const FilePage = () => {
               <FileMainBody />
             </div>
             <div className="hidden h-full w-[3%] min-w-8 md:block"></div>
-            <div className="hidden h-full w-[26%] flex-col md:flex">
+            <div className="hidden h-full w-[29%] flex-col gap-8 md:flex">
               <div className="flex-1 rounded-lg shadow-[0_0_1px_2px_rgba(0,0,0,0.05)]"></div>
-              <div className="h-[2rem]"></div>
               <div className="flex-1 rounded-lg shadow-[0_0_1px_2px_rgba(0,0,0,0.05)]"></div>
             </div>
           </div>
@@ -214,8 +212,8 @@ export default () => {
     <>
       {isLogin === 0 ? (
         <div className="flex h-screen w-screen flex-col items-center justify-center">
-          <LoadingState />
-          <div className="text-3xl">Loading...</div>
+          <LoadingState width={15 + 'vh'} height={15 + 'vh'} />
+          <div className="text-3xl font-semibold">Loading...</div>
         </div>
       ) : isLogin === 1 ? (
         <FilePage />
