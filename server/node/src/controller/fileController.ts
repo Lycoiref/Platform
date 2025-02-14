@@ -30,7 +30,10 @@ function searchFiles(category: string, dirPath: string, files: FType[]) {
     else if (category != 'others' && path.extname(file) === `.${category}`) {
       files.push({
         fileName: file,
-        filePath: path.join(dirPath, file),
+        filePath: path.relative(
+          path.join(__dirname, '../../files'),
+          path.join(dirPath, file)
+        ),
         fileSize: fs.statSync(path.join(dirPath, file)).size,
         lastModified: fs.statSync(path.join(dirPath, file)).mtime,
       })
@@ -43,7 +46,10 @@ function searchFiles(category: string, dirPath: string, files: FType[]) {
     ) {
       files.push({
         fileName: file,
-        filePath: path.join(dirPath, file),
+        filePath: path.relative(
+          path.join(__dirname, '../../files'),
+          path.join(dirPath, file)
+        ),
         fileSize: fs.statSync(path.join(dirPath, file)).size,
         lastModified: fs.statSync(path.join(dirPath, file)).mtime,
       })

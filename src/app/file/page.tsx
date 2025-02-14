@@ -119,7 +119,15 @@ const FilePage = () => {
         <div className="z-0 flex h-full w-full flex-col md:w-[82%]">
           <div className="flex h-[8%] items-center justify-between px-8 py-6 font-bold text-[#64748b] shadow-[0px_1px_4px_rgba(0,0,0,0.1)] md:text-xl">
             <div>File Management</div>
-            <div className="cursor-pointer">
+            <div className="group relative cursor-pointer">
+              <div
+                className="absolute right-[80%] top-[50%] flex h-[40px] w-[120px] items-center justify-center rounded-lg bg-white text-xs font-light opacity-0 shadow-[0px_1px_4px_rgba(0,0,0,0.1)] transition-opacity duration-200 hover:bg-gray-200 group-hover:opacity-100"
+                onClick={() => {
+                  window.location.href = '/'
+                }}
+              >
+                返回主页
+              </div>
               <UserIcon />
             </div>
           </div>
