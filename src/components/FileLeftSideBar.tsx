@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { filesAndFolders } from '@/store/fileStore'
+import { filesAndFolders, filesReader, filterFiles } from '@/store/fileStore'
 
 import {
   LeftBarSet,
@@ -48,12 +48,7 @@ const FileLeftSideBar = () => {
     <>
       <div className="hidden w-[18%] bg-[#f9fafb] p-6 md:block">
         <div className="flex h-full w-full flex-col items-center">
-          <div
-            onClick={() => {
-              filesAndFolders.setTotalPath('')
-            }}
-            className="md:max-xl:text:lg flex h-[2.5rem] w-full cursor-pointer items-center justify-around text-base font-bold text-[#707070] xl:text-xl"
-          >
+          <div className="md:max-xl:text:lg flex h-[2.5rem] w-full cursor-pointer items-center justify-around text-base font-bold text-[#707070] xl:text-xl">
             <div
               onClick={() => {
                 setExpandCategories(!expandCategories)
@@ -66,10 +61,19 @@ const FileLeftSideBar = () => {
             >
               <ExpandIconA />
             </div>
-            <div className="hidden xl:block">我的文件</div>
+            <div
+              className="hidden xl:block"
+              onClick={() => {
+                filesAndFolders.setTotalPath('')
+                filesReader()
+              }}
+            >
+              我的文件
+            </div>
             <div className="hidden md:max-xl:block">Files</div>
             <LeftBarSet />
           </div>
+          <div className="h-5"></div>
           <div
             style={{
               overflow: 'hidden',
@@ -78,12 +82,15 @@ const FileLeftSideBar = () => {
               opacity: expandCategories ? 1 : 0,
               transition: 'all 0.35s ease',
             }}
-            className="flex w-full flex-col items-center"
+            className="flex w-full flex-col items-center gap-2"
           >
             {expandCategories &&
               category.map((value) => {
                 return (
-                  <div className="flex h-[2.5rem] w-full cursor-pointer items-center justify-center gap-4 rounded-lg text-xs font-semibold text-[#707070] hover:bg-[#f3f4f6] md:text-sm">
+                  <div
+                    className="flex h-[2.5rem] w-full cursor-pointer items-center justify-center gap-4 rounded-lg text-xs font-semibold text-[#707070] hover:bg-[#f3f4f6] md:text-sm"
+                    onClick={() => filterFiles(value.id)}
+                  >
                     {value.component}
                     <div className="hidden xl:block">{value.name}</div>
                   </div>
@@ -143,7 +150,10 @@ const FileLeftSideBar = () => {
                 {expandCategories &&
                   category.map((value) => {
                     return (
-                      <div className="flex h-[2.5rem] w-full cursor-pointer items-center justify-center gap-4 rounded-lg text-xs font-semibold text-[#707070] hover:bg-[#f3f4f6] md:text-sm">
+                      <div
+                        className="flex h-[2.5rem] w-full cursor-pointer items-center justify-center gap-4 rounded-lg text-xs font-semibold text-[#707070] hover:bg-[#f3f4f6] md:text-sm"
+                        onClick={() => filterFiles(value.id)}
+                      >
                         {value.component}
                         <div>{value.name}</div>
                       </div>

@@ -61,6 +61,10 @@ const getIcon = (f: FType) => {
 
 const onContextMenu = (e: React.MouseEvent) => {
   e.preventDefault()
+  // const ww = window.innerWidth
+  // const wh = window.innerHeight
+  // const x = e.clientX + 150 > ww ? 2 * ww - e.clientX - 150 : e.clientX
+  // const y = e.clientY + 240 > wh ? 2 * wh - e.clientY - 240 : e.clientY
   const x = e.clientX
   const y = e.clientY
   basicStates.setMousePosition({ x, y })
@@ -71,8 +75,8 @@ const onContextMenu = (e: React.MouseEvent) => {
 
 const createAction = async (name: string | undefined) => {
   if (!name) {
-    console.log('newFolder')
-    filesReader()
+    const temp = filesAndFolders.files.slice(1)
+    filesAndFolders.resetAll(temp)
     return
   }
   let url = `${baseURL}/api/file/create?`
@@ -87,6 +91,8 @@ const createAction = async (name: string | undefined) => {
   console.log('newFolder')
   filesReader()
 }
+
+// const changeName = async () => {}
 
 const FilesRender = observer(() => {
   return basicStates.isLoading ? (
@@ -183,7 +189,6 @@ const FilesRender = observer(() => {
                 onContextMenu={(e) => {
                   basicStates.setRenameInput(undefined)
                   currentItem.reset(item, index)
-
                   onContextMenu(e)
                 }}
                 onClick={(e) => {
@@ -245,9 +250,6 @@ const FilesRender = observer(() => {
                     {item.isBeingRenamed ? (
                       <Input
                         autoFocus={true}
-                        onBlur={() => {
-                          item.isBeingRenamed = false
-                        }}
                         ref={filesAndFolders.refs[index]}
                         size="small"
                         value={basicStates.renameInput}
@@ -258,12 +260,18 @@ const FilesRender = observer(() => {
                         onClick={(e) => {
                           e.stopPropagation()
                         }}
-                        onEnterPress={() => {
-                          if (basicStates.renameInput) {
+                        onBlurCapture={() => {
+                          if (basicStates.renameInput !== '') {
                             if (item.name == '') {
                               createAction(basicStates.renameInput)
+                            } else if (item.name == basicStates.renameInput) {
+                              item.isBeingRenamed = false
+                              return
                             } else {
-                              renameFileOrFolder(item, basicStates.renameInput)
+                              renameFileOrFolder(
+                                item,
+                                basicStates.renameInput as string
+                              )
                             }
                           } else {
                             Notification.error({
@@ -275,7 +283,33 @@ const FilesRender = observer(() => {
                               duration: 2,
                               position: 'top',
                             })
-                            console.log('changeName')
+                            filesReader()
+                          }
+                          basicStates.setRenameInput(undefined)
+                        }}
+                        onEnterPress={() => {
+                          if (basicStates.renameInput !== '') {
+                            if (item.name == '') {
+                              createAction(basicStates.renameInput)
+                            } else if (item.name == basicStates.renameInput) {
+                              item.isBeingRenamed = false
+                              return
+                            } else {
+                              renameFileOrFolder(
+                                item,
+                                basicStates.renameInput as string
+                              )
+                            }
+                          } else {
+                            Notification.error({
+                              title:
+                                item.size !== null
+                                  ? '文件名字不能为空！'
+                                  : '文件夹名字不能为空！',
+                              content: 'Sorry but failed.',
+                              duration: 2,
+                              position: 'top',
+                            })
                             filesReader()
                           }
                           basicStates.setRenameInput(undefined)
@@ -293,7 +327,7 @@ const FilesRender = observer(() => {
                             .slice(0, -1)
                             .reduce((sum, part) => sum + part.length, 0) >= 12
                             ? item.name.slice(0, 12) + '...'
-                            : item.name}
+                            : item.name.split('.').slice(0, -1).join('.')}
                         </div>
                         <div
                           style={{
