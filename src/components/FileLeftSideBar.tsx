@@ -1,6 +1,11 @@
 import React, { useState } from 'react'
 
-import { filesAndFolders, filesReader, filterFiles } from '@/store/fileStore'
+import {
+  basicStates,
+  filesAndFolders,
+  filesReader,
+  filterFiles,
+} from '@/store/fileStore'
 
 import {
   LeftBarSet,
@@ -65,6 +70,7 @@ const FileLeftSideBar = () => {
               className="hidden xl:block"
               onClick={() => {
                 filesAndFolders.setTotalPath('')
+                basicStates.setIsSorting(false)
                 filesReader()
               }}
             >
@@ -89,7 +95,10 @@ const FileLeftSideBar = () => {
                 return (
                   <div
                     className="flex h-[2.5rem] w-full cursor-pointer items-center justify-center gap-4 rounded-lg text-xs font-semibold text-[#707070] hover:bg-[#f3f4f6] md:text-sm"
-                    onClick={() => filterFiles(value.id)}
+                    onClick={() => {
+                      filterFiles(value.id)
+                      basicStates.setIsSorting(true)
+                    }}
                   >
                     {value.component}
                     <div className="hidden xl:block">{value.name}</div>
@@ -132,7 +141,15 @@ const FileLeftSideBar = () => {
                 >
                   <ExpandIconA />
                 </div>
-                <div>我的文件</div>
+                <div
+                  onClick={() => {
+                    filesAndFolders.setTotalPath('')
+                    basicStates.setIsSorting(false)
+                    filesReader()
+                  }}
+                >
+                  我的文件
+                </div>
                 <div>
                   <LeftBarSet />
                 </div>
@@ -152,7 +169,10 @@ const FileLeftSideBar = () => {
                     return (
                       <div
                         className="flex h-[2.5rem] w-full cursor-pointer items-center justify-center gap-4 rounded-lg text-xs font-semibold text-[#707070] hover:bg-[#f3f4f6] md:text-sm"
-                        onClick={() => filterFiles(value.id)}
+                        onClick={() => {
+                          filterFiles(value.id)
+                          basicStates.setIsSorting(true)
+                        }}
                       >
                         {value.component}
                         <div>{value.name}</div>

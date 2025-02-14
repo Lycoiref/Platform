@@ -105,7 +105,10 @@ const FilesRender = observer(() => {
     </>
   ) : (
     <>
-      <div className="flex h-[1.8rem] w-full items-center px-[3%] text-xs font-semibold">
+      <div
+        className="h-[1.8rem] w-full items-center px-[3%] text-xs font-semibold"
+        style={{ display: basicStates.isSorting ? 'none' : 'flex' }}
+      >
         <div
           style={{
             display: filesAndFolders.totalPath ? 'none' : 'block',

@@ -105,6 +105,7 @@ class BasicStates {
   showMenu: boolean = false
   moveFile: boolean = false
   renderFile: boolean = false
+  isSorting: boolean = false
   cutItem: FType | null = null
   copyItem: FType | null = null
   constructor() {
@@ -128,6 +129,9 @@ class BasicStates {
         else currentItem.clearResource()
       }
     )
+  }
+  setIsSorting(isSorting: boolean) {
+    this.isSorting = isSorting
   }
   setIsSearching(isSearching: boolean) {
     this.isSearching = isSearching
