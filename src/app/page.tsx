@@ -12,8 +12,8 @@ const functionModules: FunctionModules[] = [
 const Home = () => {
   return (
     <div className="flex h-screen w-screen flex-col">
-      <div className="flex h-[8%] w-full justify-between text-xl font-semibold text-blue-600 shadow-[0px_1px_4px_rgba(0,0,0,0.1)]">
-        <div className="flex w-2/3 items-center justify-center text-blue-700 md:max-xl:w-1/2 xl:w-1/4">
+      <div className="flex h-[8%] w-full justify-between pl-16 text-xl font-semibold text-blue-600 shadow-[0px_1px_4px_rgba(0,0,0,0.1)]">
+        <div className="flex w-2/3 items-center justify-start text-blue-700 md:max-xl:w-1/2 xl:w-1/4">
           HelloWorld Platform
         </div>
         <div className="hidden w-1/4 items-center justify-center gap-8 xl:flex">
@@ -28,11 +28,11 @@ const Home = () => {
       </div>
       <div className="flex h-[92%] w-full">
         <div className="h-full w-3/4 p-10 md:flex">
-          <div className="grid h-full w-full grid-cols-[repeat(auto-fit,minmax(100px,150px))] grid-rows-[repeat(auto-fit,minmax(100px,150px))] gap-8 overflow-auto rounded-xl bg-indigo-50 p-8">
+          <div className="grid h-full w-full grid-cols-[repeat(auto-fit,minmax(100px,150px))] grid-rows-[repeat(auto-fit,minmax(100px,150px))] gap-8 overflow-auto rounded-xl p-8 px-12 shadow-[0px_0px_4px_rgba(0,0,0,0.1)]">
             {functionModules.map((item) => {
               return (
                 <div
-                  className="flex h-full w-full cursor-pointer flex-col justify-center gap-2 rounded-xl p-6 pt-2 font-semibold text-gray-500 hover:bg-indigo-100"
+                  className="flex h-full w-[90%] cursor-pointer flex-col justify-center gap-2 rounded-xl p-6 pt-2 font-semibold text-gray-500 hover:bg-gray-50"
                   onClick={() => {
                     window.location.href = item.route
                   }}
