@@ -14,7 +14,7 @@ import {
   FileMoveModal,
   FileOnlinePreview,
 } from '@/components'
-import { UserIcon, UploadIcon, LoadingState } from '@/components/static/'
+import { UserIcon, UploadIcon } from '@/components/static/'
 import { Toast } from '@douyinfe/semi-ui'
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
@@ -219,8 +219,8 @@ export default () => {
   return (
     <>
       {isLogin === 0 ? (
-        <div className="flex h-screen w-screen flex-col items-center justify-center">
-          <LoadingState width={15 + 'vh'} height={15 + 'vh'} />
+        <div className="flex h-screen w-screen flex-col items-center justify-center gap-4">
+          <div className="h-16 w-16 animate-spin rounded-full border-8 border-b-8 border-gray-300 border-b-gray-700"></div>
           <div className="text-3xl font-semibold">Loading...</div>
         </div>
       ) : isLogin === 1 ? (

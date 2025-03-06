@@ -1,3 +1,4 @@
+import FrontPageFile from './FrontPageFile.svg'
 import LeftBarDocument from './LeftBarDocument.svg'
 import LeftBarMusic from './LeftBarMusic.svg'
 import LeftBarVideo from './LeftBarVideo.svg'
@@ -28,6 +29,7 @@ import ContextMenuRename from './ContextMenuRename.svg'
 import LoadingState from './LoadingState.svg'
 
 export {
+  FrontPageFile,
   LoadingState,
   ContextMenuCopy,
   ContextMenuCut,
