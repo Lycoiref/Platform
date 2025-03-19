@@ -1,12 +1,12 @@
 'use client'
 import Image from 'next/image'
 import ReactTypingEffect from 'react-typing-effect'
-
+import { useRouter } from 'next/navigation'
 import { InputHTMLAttributes, useState } from 'react'
 import { Toast } from '@douyinfe/semi-ui'
+import { student } from '@/store/basicInfoStore'
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
-
 const LineInput = ({
   placeholder,
   type = 'text',
@@ -30,6 +30,7 @@ type AuthFormProps = {
 }
 
 const AuthForm = (props: AuthFormProps) => {
+  const router = useRouter()
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -55,7 +56,9 @@ const AuthForm = (props: AuthFormProps) => {
       const token = data.token
       localStorage.setItem('token', token)
       // 跳转到首页
-      window.location.href = '/'
+      student.setName(data.user.username)
+      student.setId(data.user.id)
+      router.push('/')
     } else {
       Toast.error('登录失败' + data.error)
     }

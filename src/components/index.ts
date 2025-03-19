@@ -18,3 +18,6 @@ export { CoursesTable }
 
 import MarkdownRender from './MarkdownRender'
 export { MarkdownRender }
+
+import WeatherModal from './WeatherModal'
+export { WeatherModal }
