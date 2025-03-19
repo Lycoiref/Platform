@@ -110,7 +110,7 @@ function WeatherModal({ width, height }: { width: string; height: string }) {
           className="flex flex-col rounded-xl p-5 font-semibold shadow-[0px_0px_4px_rgba(0,0,0,0.15)]"
           style={{ width: `${width}`, height: `${height}` }}
         >
-          <div className="flex h-[12.5%] justify-between">
+          <div className="flex h-[12.5%] justify-between text-[#4A5565]">
             <div className="flex gap-2">
               <div>{weatherInfo?.city}</div>
               <div
@@ -136,15 +136,15 @@ function WeatherModal({ width, height }: { width: string; height: string }) {
               />
             </div>
             <div className="flex flex-[2] items-center">
-              <div className="flex h-[85%] w-full flex-col rounded-xl border-2 border-dashed border-[#D4D4D8]">
+              <div className="flex h-[80%] w-full flex-col rounded-xl border-2 border-dashed border-[#D4D4D8]">
                 <div className="flex h-3/5 items-center justify-around">
                   <div className="text-xl">{weatherInfo?.temp}°</div>
-                  <div className="flex flex-col items-center justify-center text-xs font-medium text-[#52525C]">
+                  <div className="flex flex-col items-center justify-center text-xs font-medium text-[#9F9FA9]">
                     <div>上次更新</div>
                     <div>{formattedTime}</div>
                   </div>
                 </div>
-                <div className="flex h-2/5 justify-center text-sm font-medium text-[#52525C]">
+                <div className="flex h-2/5 justify-center text-sm font-medium text-[#9F9FA9]">
                   <div className="flex w-[90%] items-center justify-center gap-6 border-t-2 border-dashed border-[#D4D4D8]">
                     <div>体感温度</div>
                     <div>{weatherInfo?.bodyTemperature}°</div>
@@ -153,7 +153,7 @@ function WeatherModal({ width, height }: { width: string; height: string }) {
               </div>
             </div>
           </div>
-          <div className="flex h-[12.5%] justify-between">
+          <div className="flex h-[12.5%] justify-between font-medium text-[#4A5565]">
             <div>{weatherInfo?.weather}</div>
             <div>{weatherInfo?.windDir}</div>
             <div>风速&nbsp;{weatherInfo?.windSpeed}&nbsp;km/h</div>
