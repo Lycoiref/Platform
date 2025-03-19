@@ -13,6 +13,7 @@ import {
   FileMainBody,
   FileMoveModal,
   FileOnlinePreview,
+  WeatherModal,
 } from '@/components'
 import { UserIcon, UploadIcon } from '@/components/static/'
 import { Toast } from '@douyinfe/semi-ui'
@@ -175,7 +176,9 @@ const FilePage = () => {
             </div>
             <div className="hidden h-full w-[3%] min-w-8 md:block"></div>
             <div className="hidden h-full w-[29%] flex-col gap-8 md:flex">
-              <div className="flex-1 rounded-lg shadow-[0_0_1px_2px_rgba(0,0,0,0.05)]"></div>
+              <div className="flex-1">
+                <WeatherModal width="100%" height="100%"></WeatherModal>
+              </div>
               <div className="flex-1 rounded-lg shadow-[0_0_1px_2px_rgba(0,0,0,0.05)]"></div>
             </div>
           </div>

@@ -72,6 +72,8 @@ app.on('error', (err, ctx) => {
   console.error('Server error', err, ctx)
 })
 
+app.proxy = true
+
 // Start the server
 const PORT = process.env.PORT || 6677
 app.listen(PORT, () => {

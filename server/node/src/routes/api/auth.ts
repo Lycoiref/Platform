@@ -19,7 +19,6 @@ router.post('/register', async (ctx) => {
     }
     return
   }
-
   // 检查用户是否已存在
   const existingUser = await ctx.prisma.user.findFirst({
     where: {
@@ -73,7 +72,6 @@ router.post('/login', async (ctx) => {
     emailOrUsername: string
     password: string
   }
-
   // 校验输入
   if (!emailOrUsername || !password) {
     ctx.status = 400
@@ -82,7 +80,6 @@ router.post('/login', async (ctx) => {
     }
     return
   }
-
   // 查找用户
   const user = await ctx.prisma.user.findFirst({
     where: {
@@ -97,7 +94,6 @@ router.post('/login', async (ctx) => {
     }
     return
   }
-
   // 验证密码
   const isPasswordValid = await comparePassword(password, user.password)
   if (!isPasswordValid) {

@@ -1,6 +1,7 @@
 import Router from '@koa/router'
 import auth from './auth'
 import file from './file'
+import weather from './weather'
 import authMiddleware from '../../middleware/authMiddleware'
 import type { Context } from 'koa'
 
@@ -10,6 +11,8 @@ interface LoginRequest {
   username: string
   password: string
 }
+
+router.use('/weather', weather.routes())
 
 router.use('/auth', auth.routes())
 
