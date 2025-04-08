@@ -57,6 +57,13 @@ const getWeatherInfo = async (): Promise<WeatherInfo> => {
   return res.json()
 }
 
+function changeToFormat(str: string) {
+  if (str.length == 1) {
+    return '0' + str
+  }
+  return str
+}
+
 function WeatherModal({ width, height }: { width: string; height: string }) {
   const [isLoading, setIsLoading] = useState(true)
   const [weatherInfo, setWeatherInfo] = useState<WeatherInfo | null>(null)
@@ -81,7 +88,9 @@ function WeatherModal({ width, height }: { width: string; height: string }) {
   useEffect(() => {
     const date = new Date(weatherInfo?.updateTime as Date)
     setFormattedTime(
-      date.getHours().toString() + ':' + date.getMinutes().toString()
+      changeToFormat(date.getHours().toString()) +
+        ':' +
+        changeToFormat(date.getMinutes().toString())
     )
   }, [weatherInfo?.updateTime])
 

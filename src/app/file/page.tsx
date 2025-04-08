@@ -17,10 +17,12 @@ import {
 } from '@/components'
 import { UserIcon, UploadIcon } from '@/components/static/'
 import { Toast } from '@douyinfe/semi-ui'
+import { useRouter } from 'next/navigation'
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
 
 const FilePage = () => {
+  const router = useRouter()
   const uploadRef = useRef<HTMLInputElement>(null)
 
   const uploadClick = () => {
@@ -124,7 +126,7 @@ const FilePage = () => {
               <div
                 className="absolute right-[80%] top-[50%] flex h-[40px] w-[120px] items-center justify-center rounded-lg bg-white text-xs font-light opacity-0 shadow-[0px_1px_4px_rgba(0,0,0,0.1)] transition-opacity duration-200 hover:bg-gray-200 group-hover:opacity-100"
                 onClick={() => {
-                  window.location.href = '/'
+                  router.push('/')
                 }}
               >
                 返回主页
