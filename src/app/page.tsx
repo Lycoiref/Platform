@@ -1,4 +1,5 @@
 'use client'
+import { useEffect } from 'react'
 import { UserIcon, FrontPageFile } from '@/components/static'
 import { useRouter } from 'next/navigation'
 import { student } from '@/store/basicInfoStore'
@@ -80,12 +81,15 @@ const navItems = [
 ]
 const Home = observer(() => {
   const router = useRouter()
-  if (localStorage.getItem('token'))
-    try {
-      student.judgeToken()
-    } catch (err) {
-      console.log(err)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && localStorage.getItem('token')) {
+      try {
+        student.judgeToken()
+      } catch (err) {
+        console.log(err)
+      }
     }
+  }, [])
 
   return (
     <div className="flex h-screen w-screen flex-col">
