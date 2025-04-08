@@ -21,3 +21,6 @@ export { MarkdownRender }
 
 import WeatherModal from './WeatherModal'
 export { WeatherModal }
+
+import DailySchedule from './DailySchedule'
+export { DailySchedule }
