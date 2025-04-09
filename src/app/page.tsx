@@ -122,7 +122,24 @@ const Home = observer(() => {
       <div className="flex h-[92%] w-full">
         <div className="flex h-full w-3/4 flex-col gap-10 p-10">
           {student.id === 88888888 ? (
-            <div className="flex flex-col gap-2">{/* 游客内容不变 */}</div>
+            <div className="flex flex-col gap-2">
+              <div className="text-2xl font-bold">
+                欢迎来到HelloWorld,请先登陆哦（游客身份将无法使用社团功能）
+              </div>
+              <div className="text-sm text-gray-500">
+                Welcome to HelloWorld!!!
+              </div>
+              <div className="flex w-full justify-end">
+                <div
+                  className="cursor-pointer rounded-xl p-2 text-sm shadow-[0px_0px_4px_rgba(0,0,0,0.15)] hover:text-blue-800"
+                  onClick={() => {
+                    router.push('/auth')
+                  }}
+                >
+                  点我去登陆
+                </div>
+              </div>
+            </div>
           ) : (
             <>
               {/* 使用网格布局重构顶部区域 */}
